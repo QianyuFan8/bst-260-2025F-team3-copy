@@ -1,4 +1,4 @@
-﻿Risk Factors for Diabetes Among AgeAdults Aged 40 and Above: 
+Risk Factors for Diabetes Among AgeAdults Aged 40 and Above: 
 A Combined Logistic Regression and Random Forest Analysis Using NHANES Data
 
 
@@ -37,45 +37,33 @@ Yinuo Du: logistic regression and write the relative part of the report
 Sylvia Deng: random forest; model comparison
 
 
-
-
 Weekly breakdown of tasks and deliverables
+Week 1
+Qianyu Fan: Data Cleaning and review literature
+Yinuo Du: Read paper to determine the variables
+Sylvia Deng: Review literature on machine learning applications in diabetes prediction
 
+Week 2
+Qianyu Fan: EDA and determine the variables we need to analyze in the model
+Yinuo Du: Read paper to identify why the logistic regression is reasonable
+Sylvia Deng: Identify candidate variables and preprocessing steps compatible with Random Forest
+	
+Week 3
+Qianyu Fan: Finalize data preparation; Build R shiny dashboard (optional, confirm later if needed)
+Yinuo Du: Do the logistic regression to prepared-data
+Sylvia Deng: Implement baseline Random Forest model; tune hyperparameters
 
-
-
-	Qianyu Fan
-	Yinuo Du
-	Sylvia Deng
-	Week 1
-	Data Cleaning and review literature
-	Read paper to determine the variables
-	Review literature on machine learning applications in diabetes prediction
-	Week 2
-	EDA and determine the variables we need to analyze in the model
-	Read paper to identify why the logistic regression is reasonable
-	Identify candidate variables and preprocessing steps compatible with Random Forest
-	Week 3
-	Finalize data preparation 
-	Do the logistic regression to prepared-data
-	Implement baseline Random Forest model; tune hyperparameters
-	Week 4
-	Build R shiny dashboard (optional, confirm later if needed)
-
-
-Start to draft report
-	Improve the model 
-	Evaluate model performance
-
-Generate feature importance and interpret top predictors
-	Week 5
-	Draft the report
-	Write the report and prepare the presentation
-	Compare Random Forest results with logistic regression outputs
-
-
-Draft the report
-	Week 6
-	Finalize report and prepare slides
-	Write the report and prepare the presentation
-	Finalize visualizations and report; prepare slides
+Week 4
+Qianyu Fan: Start to draft report
+Yinuo Du: Improve the model 
+Sylvia Deng: Evaluate model performance; Generate feature importance and interpret top predictors
+	
+Week 5
+Qianyu Fan: Draft the report
+Yinuo Du: Write the report and prepare the presentation
+Sylvia Deng: Compare Random Forest results with logistic regression outputs; Draft the report
+	
+Week 6
+Qianyu Fan: Finalize report and prepare slides
+Yinuo Du: Write the report and prepare the presentation
+Sylvia Deng: Finalize visualizations and report; prepare slides
