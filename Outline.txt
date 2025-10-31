@@ -1,0 +1,81 @@
+﻿Risk Factors for Diabetes Among AgeAdults Aged 40 and Above: 
+A Combined Logistic Regression and Random Forest Analysis Using NHANES Data
+
+
+Research Questions:
+1. Among U.S. adults aged 40 years and older, how do socioeconomic, behavioral, and psychosocial factors influence the risk of diabetes?
+2. How do the variable importance rankings from a random forest model compare with the statistically significant predictors from logistic regression?
+
+
+Analysis Plan:
+1. Data Preparation
+* Subset NHANES to participants aged 40+
+* Outcome variable: Diabetes status(binary)
+* Clean missing data (exclude or impute)
+* Exclude pregnant women
+* Normalize or categorize continuous predictors 
+2. EDA
+* Summarize all predictors by diabetes status
+* Visualize distributions (e.g. histogram, boxplots)
+3. Model 1 - Logistic regression
+* Assess significant predictors (p-value, odds ratio, 95% CI)
+* model fit and possible interaction terms
+4. Model 2 - Random Forest
+* Need to consider imbalance data 
+* Evaluate feature importance (SHAP)
+* Model performance (PR-AUC, accuracy, confusion matrix)
+* Compare feature importance with logistic regression
+5. Model Comparison and interpretation
+* Identify overlap and differences in important predictors between methods
+* Discuss interpretability vs predictive accuracy
+* Relate findings to existing literature
+
+
+Team member responsibilities:
+Qianyu Fan: data cleaning, EDA, R shiny (optional) and write the relative part of the report
+Yinuo Du: logistic regression and write the relative part of the report 
+Sylvia Deng: random forest; model comparison
+
+
+
+
+Weekly breakdown of tasks and deliverables
+
+
+
+
+	Qianyu Fan
+	Yinuo Du
+	Sylvia Deng
+	Week 1
+	Data Cleaning and review literature
+	Read paper to determine the variables
+	Review literature on machine learning applications in diabetes prediction
+	Week 2
+	EDA and determine the variables we need to analyze in the model
+	Read paper to identify why the logistic regression is reasonable
+	Identify candidate variables and preprocessing steps compatible with Random Forest
+	Week 3
+	Finalize data preparation 
+	Do the logistic regression to prepared-data
+	Implement baseline Random Forest model; tune hyperparameters
+	Week 4
+	Build R shiny dashboard (optional, confirm later if needed)
+
+
+Start to draft report
+	Improve the model 
+	Evaluate model performance
+
+Generate feature importance and interpret top predictors
+	Week 5
+	Draft the report
+	Write the report and prepare the presentation
+	Compare Random Forest results with logistic regression outputs
+
+
+Draft the report
+	Week 6
+	Finalize report and prepare slides
+	Write the report and prepare the presentation
+	Finalize visualizations and report; prepare slides
