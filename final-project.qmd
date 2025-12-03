@@ -1,0 +1,121 @@
+---
+title: "Risk Factors for Diabetes Among Adults Aged 40+"
+subtitle: "A Combined Logistic Regression and Random Forest Analysis Using NHANES Data"
+author: "Sylvia Deng, Yinuo Du, Qianyu Fan"
+format: pdf
+---
+
+```{r, message = FALSE, echo=FALSE, warning=FALSE}
+# Load required packages
+library(NHANES)
+library(tidyverse)
+library(janitor)
+library(ggpubr)
+library(here)
+library(ggcorrplot)
+library(RColorBrewer)
+library(DescTools)
+library(reshape2)
+library(patchwork)
+```
+
+```{r load ,include=FALSE}
+# load data
+raw_data <- read_rds("data/raw_data.rds")
+clean_data <- read_rds("data/clean_data.rds")
+```
+
+# Abstract (150-200 words)
+
+# Introduction (500-600 words)
+
+# Methods (600-700 words)
+## Data (data sources, justify choice, clean&analyze approach, assumption/limitation)
+
+```{r, fig.cap="Distribution of Numerical Variables", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
+# Histogram plots: numerical variables
+raw_num_vars <- raw_data |>
+  select(Poverty, BMI, BPSysAve, BPDiaAve, DirectChol, SleepHrsNight)
+
+hist_plots <- map(names(raw_num_vars), function(v) {
+  ggplot(raw_data, aes_string(x = v)) +
+    geom_histogram(bins = 30, fill = "#377EB8", color = "white", na.rm = TRUE) +
+    theme_minimal(base_size = 11)})
+
+ggarrange(plotlist = hist_plots, ncol = 2, nrow = 3)
+```
+```{r, fig.cap="Distribution of Categorical Variables", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
+# Barplots: categorical variables
+raw_cat_vars <- raw_data %>%
+  select(Race1, Education, MaritalStatus, Work, SleepTrouble, PhysActive, 
+         Alcohol12PlusYr, Smoke100, HealthGen, LittleInterest, Depressed, Diabetes)
+
+bar_plots <- map(names(raw_cat_vars), function(v) {
+  ggplot(raw_data, aes_string(x = v)) +
+    geom_bar(fill = "steelblue", color = "white", na.rm = TRUE) +
+    theme_minimal(base_size = 8) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+})
+
+ggarrange(plotlist = bar_plots, ncol = 4, nrow = 3)
+```
+
+```{r, fig.cap="Correlation among Numeric Variables (Left) and Association among Categorical Variables (Right)", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
+# Numeric correlation
+num_vars <- clean_data |>
+  select(Age, BMI, BPSysAve, BPDiaAve, DirectChol, SleepHrsNight)
+
+cor_mat <- cor(num_vars, use = "pairwise.complete.obs")
+p_corr <- ggcorrplot(
+  cor_mat,
+  hc.order = FALSE,        
+  type = "lower",          
+  lab = TRUE,              
+  lab_size = 3,
+  colors = brewer.pal(9, "Blues")[c(1,5,9)],  
+  outline.col = "white",
+  tl.col = "black")
+
+# Cramer's V Heatmap
+cat_vars <- clean_data |>
+  select(Gender, Race1, Education, MaritalStatus, Poverty, Work, SleepTrouble, 
+         PhysActive, Alcohol12PlusYr, Smoke100, HealthGen, LittleInterest, Depressed)
+
+cramer_matrix <- sapply(cat_vars, function(x)
+  sapply(cat_vars, function(y) CramerV(table(x, y))))
+cramer_matrix <- round(cramer_matrix, 3)
+rownames(cramer_matrix) <- colnames(cramer_matrix) <- names(cat_vars)
+
+cramer_df <- melt(cramer_matrix, varnames = c("Var1", "Var2"), value.name = "value")
+
+p_cramer <- ggplot(cramer_df, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradientn(colours = brewer.pal(9, "Blues"),
+                       limits = c(0, 1),
+                       name = "Cramér's V") +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.grid = element_blank()) +
+  labs(x = NULL, y = NULL)
+
+(p_corr | p_cramer) +
+  plot_annotation(tag_levels = "A")
+```
+
+
+
+
+
+
+## Model
+Model selection, model assumption, VIF, model interpretation
+
+# Results (500-600 words)
+
+# Discussion (600-700 words)
+conclusion, limitation
+
+# References
+
+
+
