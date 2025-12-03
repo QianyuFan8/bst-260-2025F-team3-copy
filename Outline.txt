@@ -1,4 +1,4 @@
-Risk Factors for Diabetes Among AgeAdults Aged 40 and Above: 
+Risk Factors for Diabetes Among Adults Aged 40+: 
 A Combined Logistic Regression and Random Forest Analysis Using NHANES Data
 
 
@@ -32,7 +32,7 @@ Analysis Plan:
 
 
 Team member responsibilities:
-Qianyu Fan: data cleaning, EDA, R shiny (optional) and write the relative part of the report
+Qianyu Fan: data cleaning, EDA, and write the relative part of the report
 Yinuo Du: logistic regression and write the relative part of the report 
 Sylvia Deng: random forest; model comparison
 
@@ -49,7 +49,7 @@ Yinuo Du: Read paper to identify why the logistic regression is reasonable
 Sylvia Deng: Identify candidate variables and preprocessing steps compatible with Random Forest
 	
 Week 3
-Qianyu Fan: Finalize data preparation; Build R shiny dashboard (optional, confirm later if needed)
+Qianyu Fan: Finalize data preparation
 Yinuo Du: Do the logistic regression to prepared-data
 Sylvia Deng: Implement baseline Random Forest model; tune hyperparameters
 
