@@ -26,6 +26,11 @@ dat <- rawdat |>
       Education %in% c("8th Grade", "9 - 11th Grade", "High School") ~ "≤HighSchool",
       Education == "Some College" ~ "SomeCollege",
       Education == "College Grad" ~ "College+"),
+    # Encode MaritalStatus into 3 groups
+    MaritalStatus = case_when(
+      MaritalStatus == "NeverMarried" ~ "NeverMarried",
+      MaritalStatus == "Married" ~ "Married",
+      MaritalStatus %in% c("Divorced", "LivePartner", "Separated", "Widowed") ~ "NotMarried"),
     # Encode Poverty into 3 groups
     Poverty = case_when(
       Poverty <= 1 ~ "LowIncome",
@@ -33,7 +38,8 @@ dat <- rawdat |>
       Poverty >= 4 ~ "HighIncome"),
     # Transform chr into factor
     Education = factor(Education, levels = c("≤HighSchool", "SomeCollege", "College+")),
-    Poverty   = factor(Poverty, levels = c("LowIncome", "MiddleIncome", "HighIncome")),
+    MaritalStatus = factor(MaritalStatus, levels = c("NeverMarried", "Married", "NotMarried")),
+    Poverty = factor(Poverty, levels = c("LowIncome", "MiddleIncome", "HighIncome")),
     # Reorder HealthGen
     HealthGen = factor(HealthGen, levels = c("Poor", "Fair", "Good", "Vgood", "Excellent"))
   ) |>

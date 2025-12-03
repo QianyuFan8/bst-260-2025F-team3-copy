@@ -105,8 +105,6 @@ p_cramer <- ggplot(cramer_df, aes(Var1, Var2, fill = value)) +
 
 
 
-
-
 ## Model
 Model selection, model assumption, VIF, model interpretation
 
