@@ -31,6 +31,7 @@ clean_data <- read_rds("data/clean_data.rds")
 # Introduction (500-600 words)
 
 # Methods (600-700 words)
+
 ## Data (data sources, justify choice, clean&analyze approach, assumption/limitation)
 
 ```{r, fig.cap="Distribution of Numerical Variables", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
@@ -45,6 +46,7 @@ hist_plots <- map(names(raw_num_vars), function(v) {
 
 ggarrange(plotlist = hist_plots, ncol = 2, nrow = 3)
 ```
+
 ```{r, fig.cap="Distribution of Categorical Variables", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
 # Barplots: categorical variables
 raw_cat_vars <- raw_data %>%
@@ -103,9 +105,6 @@ p_cramer <- ggplot(cramer_df, aes(Var1, Var2, fill = value)) +
   plot_annotation(tag_levels = "A")
 ```
 
-
-
-
 # Model (Model selection, model assumption, VIF, model interpretation)
 
 ## logistic Regression
@@ -114,40 +113,76 @@ To evaluate socioeconomic, behavioral, psychosocial, and clinical determinants o
 
 ### Model Specification
 
-The final model included demographic characteristics (Gender, Age, Race1, Education, MaritalStatus, Poverty, Work), anthropometric and clinical measures (BMI, BPSysAve, BPDiaAve, DirectChol), behavioral indicators (SleepHrsNight, SleepTrouble, PhysActive, Alcohol12PlusYr, Smoke100), and psychosocial measures (HealthGen, LittleInterest, Depressed). The model was specified as:
+The full model included one dependent variable and 19 covariates: 
+
+ **Outcome:** Diabetes  
+*(Binary indicator of diagnosed diabetes)*
+
+
+**Control variables**
+
+- **Age** *(Age in years)*  
+- **Gender** *(Self-reported sex: Male/Female)*  
+- **Race1** *(Race/Ethnicity category)*  
+
+
+**Socioeconomic factors**
+
+- **Education** *(Highest level of education completed)*  
+- **Poverty** *(Family poverty-income ratio)*  
+- **MaritalStatus** *(Current marital status)*  
+- **Work** *(Employment status)*  
+
+
+**Behavioral factors**
+
+- **BMI** *(Body Mass Index)*  
+- **BPSysAve** *(Average systolic blood pressure)*  
+- **BPDiaAve** *(Average diastolic blood pressure)*  
+- **DirectChol** *(Direct HDL cholesterol measure)*  
+- **SleepHrsNight** *(Hours of sleep on an average night)*  
+- **SleepTrouble** *(Trouble sleeping: Yes/No)*  
+- **PhysActive** *(Physically active in the past 30 days: Yes/No)*  
+- **Alcohol12PlusYr** *(Had ≥12 alcoholic drinks in the past year: Yes/No)*  
+- **Smoke100** *(Smoked at least 100 cigarettes in lifetime: Yes/No)*  
+
+
+**Psychosocial factors**
+
+- **HealthGen** *(Self-rated general health)*  
+- **LittleInterest** *(Little interest or pleasure in activities: Yes/No)*  
+- **Depressed** *(Feeling down, depressed, or hopeless: Yes/No)*  
+
+
+The model was specified as:
 
 $$
-\log\left(\frac{P(D_i = 1)}{1 - P(D_i = 1)}\right)
+\begin{aligned}
+& \log\left(\frac{P(D_i = 1)}{1 - P(D_i = 1)}\right)
 = \beta_0 
 + \beta_1 X_{\text{gender},i}
 + \beta_2 X_{\text{age},i}
 + \beta_3 X_{\text{race1},i}
 + \beta_4 X_{\text{education},i}
 + \beta_5 X_{\text{marital},i}
-+ \beta_6 X_{\text{poverty},i}
-$$
-
-$$
-+ \beta_7 X_{\text{work},i}
++ \beta_6 X_{\text{poverty},i} \\
+& + \beta_7 X_{\text{work},i}
 + \beta_8 X_{\text{bmi},i}
 + \beta_9 X_{\text{bpsys},i}
 + \beta_{10} X_{\text{bpdia},i}
 + \beta_{11} X_{\text{chol},i}
 + \beta_{12} X_{\text{sleephrs},i}
-+ \beta_{13} X_{\text{sleeptrouble},i}
-$$
-
-$$
-+ \beta_{14} X_{\text{physact},i}
++ \beta_{13} X_{\text{sleeptrouble},i} \\
+& + \beta_{14} X_{\text{physact},i}
 + \beta_{15} X_{\text{alcohol},i}
 + \beta_{16} X_{\text{smoke100},i}
 + \beta_{17} X_{\text{healthgen},i}
 + \beta_{18} X_{\text{littleinterest},i}
 + \beta_{19} X_{\text{depressed},i}
+\end{aligned}
 $$
 
-for $i = 1, \ldots, 2388$.
-Continuous predictors were kept on their natural scale to preserve interpretability. Categorical variables were dummy-coded using NHANES reference levels. All predictors were selected a priori based on existing literature and the conceptual framework defined in our research questions.
+for $i = 1, \ldots, 2388$. Continuous predictors were kept on their natural scale to preserve interpretability. Categorical variables were dummy-coded using NHANES reference levels. All predictors were selected based on existing literature and the conceptual framework defined in our research questions.
 
 ### Model Estimation
 
@@ -171,37 +206,39 @@ We assessed multicollinearity using the generalized variance inflation factor (G
 ```{r, echo=FALSE, results='hide'}
 vif(logistic)
 ```
+
 **Table 1. Generalized Variance Inflation Factors (GVIF) for Predictors in the Logistic Regression Model**
 
-| Variable          | GVIF    | Df | $\text{GVIF}^{(1/(2*\text{Df}))}$ |
-|------------------|---------|----|------------------|
-| Gender           | 1.417198 | 1 | 1.190461 |
-| Age              | 2.067205 | 1 | 1.437778 |
-| Race1            | 1.463728 | 4 | 1.048776 |
-| Education        | 1.393391 | 2 | 1.086471 |
-| MaritalStatus    | 1.230598 | 2 | 1.053244 |
-| Poverty          | 1.473221 | 2 | 1.101709 |
-| Work             | 1.704569 | 2 | 1.142625 |
-| BMI              | 1.195429 | 1 | 1.093357 |
-| BPSysAve         | 1.324791 | 1 | 1.150996 |
-| BPDiaAve         | 1.381903 | 1 | 1.175544 |
-| DirectChol       | 1.274176 | 1 | 1.128794 |
-| SleepHrsNight    | 1.167487 | 1 | 1.080503 |
-| SleepTrouble     | 1.207583 | 1 | 1.098901 |
-| PhysActive       | 1.203566 | 1 | 1.097072 |
-| Alcohol12PlusYr  | 1.302351 | 1 | 1.141206 |
-| Smoke100         | 1.205641 | 1 | 1.098017 |
-| HealthGen        | 1.496224 | 4 | 1.051658 |
-| LittleInterest   | 1.533131 | 1 | 1.238197 |
-| Depressed        | 1.590547 | 1 | 1.261169 |
-
-
+| Variable        | GVIF     | Df  | $\text{GVIF}^{(1/(2*\text{Df}))}$ |
+|-----------------|----------|-----|-----------------------------------|
+| Gender          | 1.417198 | 1   | 1.190461                          |
+| Age             | 2.067205 | 1   | 1.437778                          |
+| Race1           | 1.463728 | 4   | 1.048776                          |
+| Education       | 1.393391 | 2   | 1.086471                          |
+| MaritalStatus   | 1.230598 | 2   | 1.053244                          |
+| Poverty         | 1.473221 | 2   | 1.101709                          |
+| Work            | 1.704569 | 2   | 1.142625                          |
+| BMI             | 1.195429 | 1   | 1.093357                          |
+| BPSysAve        | 1.324791 | 1   | 1.150996                          |
+| BPDiaAve        | 1.381903 | 1   | 1.175544                          |
+| DirectChol      | 1.274176 | 1   | 1.128794                          |
+| SleepHrsNight   | 1.167487 | 1   | 1.080503                          |
+| SleepTrouble    | 1.207583 | 1   | 1.098901                          |
+| PhysActive      | 1.203566 | 1   | 1.097072                          |
+| Alcohol12PlusYr | 1.302351 | 1   | 1.141206                          |
+| Smoke100        | 1.205641 | 1   | 1.098017                          |
+| HealthGen       | 1.496224 | 4   | 1.051658                          |
+| LittleInterest  | 1.533131 | 1   | 1.238197                          |
+| Depressed       | 1.590547 | 1   | 1.261169                          |
 
 ### Model Diagnostics
 
 Model assumptions were assessed through inspection of deviance residuals and influential observations. The residual vs. fitted plot showed no systematic pattern, indicating adequate model fit. Cook’s distance values were uniformly low, suggesting the absence of influential data points distorting coefficient estimates.
 
-```{r residual-plot, echo=FALSE, fig.cap="Residual vs Fitted Plot"}
+```{r combined-plots, echo=FALSE, fig.cap="Residual vs Fitted and Cook's Distance Diagnostics"}
+par(mfrow = c(1, 2))  # two plots in one figure
+
+# --- Plot 1: Residual vs Fitted ---
 plot(
   logistic$fitted.values,
   residuals(logistic, type = "deviance"),
@@ -210,13 +247,12 @@ plot(
   main = "Residual vs Fitted"
 )
 abline(h = 0, col = "red")
-```
 
-```{r cooks-distance, echo=FALSE, fig.cap="Cook’s Distance for Influential Points"}
+# --- Plot 2: Cook's Distance ---
 plot(
   cooks.distance(logistic),
   type = "h",
-  main = "Cook's Distance - Influential Points",
+  main = "Cook's Distance",
   ylab = "Cook's Distance",
   xlab = "Index"
 )
@@ -225,58 +261,54 @@ abline(
   col = "red",
   lty = 2
 )
+
+par(mfrow = c(1, 1))  # reset to default
 ```
 
-### Model Interpretation
 
-In this framework, each coefficient represents the change in the log-odds of having diabetes associated with a one-unit increase in a continuous predictor or a change from the reference category for categorical predictors, holding all other variables constant. Exponentiating the coefficients yields adjusted odds ratios, which provide a more interpretable scale for assessing relative increases or decreases in diabetes risk. An odds ratio greater than 1 indicates an elevated likelihood of diabetes, whereas an odds ratio below 1 suggests a protective association. The intercept $\beta_0$ represents the baseline log-odds of diabetes for an individual in all reference categories with continuous predictors set to zero, serving as the model’s starting point for estimating individual-level risk. This interpretation allows us to compare the relative contributions of demographic, behavioral, psychosocial, and clinical factors within a unified statistical model and provides a basis for evaluating how these associations align with the variable importance patterns observed in the Random Forest analysis.
-
-Together, these diagnostics and coefficient patterns support the adequacy of the logistic regression model and provide a strong basis for comparison with the Random Forest results presented later.
-
+Together, these diagnostics and coefficient patterns support the adequacy of the logistic regression model and provide a strong basis for comparison with the Random Forest results presented later. Because logistic regression assumes linear and additive effects on the log-odds scale, any nonlinear relationships or higher-order interactions may remain undetected. To complement this parametric approach and assess more flexible predictive structures, we next implement a Random Forest model.
 
 
 # Results (500-600 words)
 
 ## Logistic Regression Results
 
-Table 2 summarizes the regression coefficients, standard errors, z-statistics, p-values, and significance indicators. Age, BMI, systolic and diastolic blood pressure, and general health rating emerged as significant predictors of diabetes risk. 
+Table 2 summarizes the regression coefficients, standard errors, z-statistics, p-values, and significance indicators. Age, BMI, systolic and diastolic blood pressure, and general health rating emerged as significant predictors of diabetes risk.
 
 **Table 2. Logistic Regression Coefficients for Diabetes Risk**
 
-| Predictor | Estimate | Std. Error | z value | p-value | Significance |
-|----------|----------|------------|---------|---------|--------------|
-| (Intercept) | -3.6113 | 0.9775 | -3.694 | 0.00022 | *** |
-| Gender (Male) | 0.0725 | 0.1421 | 0.511 | 0.6096 |  |
-| Age | 0.0511 | 0.0071 | 7.176 | 7.18e-13 | *** |
-| Race: Hispanic | -0.3780 | 0.2833 | -1.334 | 0.1821 |  |
-| Race: Mexican | -0.1310 | 0.2550 | -0.511 | 0.6095 |  |
-| Race: White | -0.7934 | 0.1746 | -4.544 | 5.53e-06 | *** |
-| Race: Other | 0.1986 | 0.2616 | 0.759 | 0.4479 |  |
-| Education: Some College | 0.2067 | 0.1473 | 1.404 | 0.1605 |  |
-| Education: College+ | 0.2193 | 0.1769 | 1.240 | 0.2149 |  |
-| Married | 0.1654 | 0.2454 | 0.674 | 0.5003 |  |
-| Not Married | 0.1075 | 0.2536 | 0.424 | 0.6717 |  |
-| Middle Income | -0.1184 | 0.1786 | -0.662 | 0.5079 |  |
-| High Income | -0.1149 | 0.2181 | -0.527 | 0.5984 |  |
-| Work: Not Working | -0.3528 | 0.3858 | -0.915 | 0.3604 |  |
-| Work: Working | -0.2747 | 0.3840 | -0.715 | 0.4735 |  |
-| BMI | 0.0598 | 0.0094 | 6.384 | 1.73e-10 | *** |
-| Systolic BP | 0.00847 | 0.00364 | 2.323 | 0.0202 | * |
-| Diastolic BP | -0.0126 | 0.00543 | -2.322 | 0.0202 | * |
-| Direct Cholesterol | -1.0835 | 0.1966 | -5.268 | 1.38e-07 | *** |
-| Sleep Hours | -0.0084 | 0.0436 | -0.088 | 0.9296 |  |
-| Sleep Trouble | 0.2166 | 0.1384 | 1.565 | 0.1175 |  |
-| Physically Active | 0.1366 | 0.1342 | 1.017 | 0.3089 |  |
-| Alcohol 12+ / yr | 0.0556 | 0.1521 | 0.365 | 0.7150 |  |
-| Ever Smoked 100 Cigarettes | 0.0437 | 0.1309 | 0.334 | 0.7382 |  |
-| Health: Fair | -0.6661 | 0.2526 | -2.637 | 0.00837 | ** |
-| Health: Good | -1.2213 | 0.2539 | -4.810 | 1.51e-06 | *** |
-| Health: Very Good | -1.9612 | 0.2892 | -6.782 | 1.19e-11 | *** |
-| Health: Excellent | -1.9563 | 0.3513 | -5.570 | 2.55e-08 | *** |
-| Little Interest | -0.1791 | 0.1673 | -1.070 | 0.2845 |  |
-| Depressed | 0.3126 | 0.1718 | 1.820 | 0.0689 | . |
-
-
+| Predictor                  | Estimate | Std. Error | z value | p-value  | Significance |
+|----------------------------|----------|------------|---------|----------|--------------|
+| (Intercept)                | -3.6113  | 0.9775     | -3.694  | 0.00022  | \*\*\*       |
+| Gender (Male)              | 0.0725   | 0.1421     | 0.511   | 0.6096   |              |
+| Age                        | 0.0511   | 0.0071     | 7.176   | 7.18e-13 | \*\*\*       |
+| Race: Hispanic             | -0.3780  | 0.2833     | -1.334  | 0.1821   |              |
+| Race: Mexican              | -0.1310  | 0.2550     | -0.511  | 0.6095   |              |
+| Race: White                | -0.7934  | 0.1746     | -4.544  | 5.53e-06 | \*\*\*       |
+| Race: Other                | 0.1986   | 0.2616     | 0.759   | 0.4479   |              |
+| Education: Some College    | 0.2067   | 0.1473     | 1.404   | 0.1605   |              |
+| Education: College+        | 0.2193   | 0.1769     | 1.240   | 0.2149   |              |
+| Married                    | 0.1654   | 0.2454     | 0.674   | 0.5003   |              |
+| Not Married                | 0.1075   | 0.2536     | 0.424   | 0.6717   |              |
+| Middle Income              | -0.1184  | 0.1786     | -0.662  | 0.5079   |              |
+| High Income                | -0.1149  | 0.2181     | -0.527  | 0.5984   |              |
+| Work: Not Working          | -0.3528  | 0.3858     | -0.915  | 0.3604   |              |
+| Work: Working              | -0.2747  | 0.3840     | -0.715  | 0.4735   |              |
+| BMI                        | 0.0598   | 0.0094     | 6.384   | 1.73e-10 | \*\*\*       |
+| Systolic BP                | 0.00847  | 0.00364    | 2.323   | 0.0202   | \*           |
+| Diastolic BP               | -0.0126  | 0.00543    | -2.322  | 0.0202   | \*           |
+| Direct Cholesterol         | -1.0835  | 0.1966     | -5.268  | 1.38e-07 | \*\*\*       |
+| Sleep Hours                | -0.0084  | 0.0436     | -0.088  | 0.9296   |              |
+| Sleep Trouble              | 0.2166   | 0.1384     | 1.565   | 0.1175   |              |
+| Physically Active          | 0.1366   | 0.1342     | 1.017   | 0.3089   |              |
+| Alcohol 12+ / yr           | 0.0556   | 0.1521     | 0.365   | 0.7150   |              |
+| Ever Smoked 100 Cigarettes | 0.0437   | 0.1309     | 0.334   | 0.7382   |              |
+| Health: Fair               | -0.6661  | 0.2526     | -2.637  | 0.00837  | \*\*         |
+| Health: Good               | -1.2213  | 0.2539     | -4.810  | 1.51e-06 | \*\*\*       |
+| Health: Very Good          | -1.9612  | 0.2892     | -6.782  | 1.19e-11 | \*\*\*       |
+| Health: Excellent          | -1.9563  | 0.3513     | -5.570  | 2.55e-08 | \*\*\*       |
+| Little Interest            | -0.1791  | 0.1673     | -1.070  | 0.2845   |              |
+| Depressed                  | 0.3126   | 0.1718     | 1.820   | 0.0689   | .            |
 
 Table 2 summarizes the logistic regression estimates for diabetes among adults aged 40 years and older. Several variables showed statistically significant associations with diabetes status. Age demonstrated a strong positive relationship, with higher age corresponding to higher odds of diabetes. BMI was also significantly associated with increased odds of diabetes. Among the clinical measures, systolic blood pressure was positively associated with diabetes, while diastolic blood pressure showed a small but statistically significant negative association. Direct cholesterol levels were significantly lower among individuals with diabetes.
 
@@ -288,17 +320,15 @@ In contrast, socioeconomic indicators (education, income, marital status, work s
 
 Overall, the most prominent associations were observed for age, BMI, blood pressure measures, cholesterol, self-rated health, and race, indicating that these variables contributed the most to the adjusted model.
 
+### Model Interpretation
+
+In this framework, each coefficient represents the change in the log-odds of having diabetes associated with a one-unit increase in a continuous predictor or a change from the reference category for categorical predictors, holding all other variables constant. Exponentiating the coefficients yields adjusted odds ratios, which provide a more interpretable scale for assessing relative increases or decreases in diabetes risk. An odds ratio greater than 1 indicates an elevated likelihood of diabetes, whereas an odds ratio below 1 suggests a protective association. The intercept $\beta_0$ represents the baseline log-odds of diabetes for an individual in all reference categories with continuous predictors set to zero, serving as the model’s starting point for estimating individual-level risk. This interpretation allows us to compare the relative contributions of demographic, behavioral, psychosocial, and clinical factors within a unified statistical model and provides a basis for evaluating how these associations align with the variable importance patterns observed in the Random Forest analysis.
+
+
 To further assess variable importance and capture potential nonlinear relationships or interactions, a Random Forest model was subsequently applied using the same set of predictors.
 
-
-
-
-
-
 # Discussion (600-700 words)
+
 conclusion, limitation
 
 # References
-
-
-
