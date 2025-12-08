@@ -81,3 +81,23 @@ pred_class <- predict(rf_balanced, test_data)
 cm <- confusionMatrix(pred_class, test_data$Diabetes, positive = "Yes")
 print(cm)
 
+# ROC + AUC
+roc_obj <- roc(test_data$Diabetes, pred_prob)
+
+plot(roc_obj, col = "blue", legacy.axes = TRUE,
+     main = "ROC Curve - Balanced Random Forest")
+
+auc_value <- auc(roc_obj)
+print(paste("AUC:", round(auc_value, 4)))
+
+# Precision–Recall Curve
+pr <- pr.curve(
+  scores.class0 = pred_prob[test_data$Diabetes=="Yes"],
+  scores.class1 = pred_prob[test_data$Diabetes=="No"],
+  curve = TRUE
+)
+
+plot(pr, main = "Precision–Recall Curve - Balanced RF")
+print(paste("PR-AUC:", round(pr$auc.integral, 4)))
+
+
