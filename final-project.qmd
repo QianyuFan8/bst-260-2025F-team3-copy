@@ -377,7 +377,25 @@ main = "Confusion Matrix - Balanced Random Forest")
 ```
 The confusion matrix illustrates model behavior across both outcomes. While false positives increased as a result of rebalancing, false negatives decreased substantially. This tradeoff strengthens usefulness in clinical settings where missing diabetes cases is more costly than generating additional screenings.
 
+## Variable Importance from Random Forest
 
+Two complementary methods were used to assess predictor importance: impurity-based importance from the Random Forest model and permutation-based importance using ROC–AUC as the evaluation metric.
+
+```{r rf-results-3}
+varImpPlot(rf_final, main="Random Forest Variable Importance (Gini Index)")
+```
+Figure X. Random Forest variable importance using Gini impurity reduction. Larger values indicate greater contribution to tree-based splits.
+
+```{r rf-results-4}
+vip(vi, num_features = 10, geom = "col")
+```
+Figure X. Permutation-based feature importance ranked by AUC degradation. Bars represent performance loss after random permutation of each variable.
+
+Clinical variables dominated both rankings. Body Mass Index, age, direct cholesterol, systolic blood pressure, diastolic blood pressure, and self-rated health consistently produced the largest reductions in model performance when permuted. This indicates that the classifier relied primarily on physiological and metabolic indicators when predicting diabetes status.
+
+By contrast, socioeconomic characteristics (education, income, employment), behavioral factors (smoking, alcohol use, physical activity), and psychosocial measures (depression, loss of interest) contributed little to predictive performance when clinical variables were included.
+
+This pattern closely aligns with the logistic regression findings. Both modeling strategies highlight the central role of metabolic health in diabetes risk among older adults. Rather than uncovering new predictors, the Random Forest model improved detection accuracy while reinforcing known clinical risk structures.
 
 
 # Discussion (600-700 words)
