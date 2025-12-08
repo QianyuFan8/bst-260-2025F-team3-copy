@@ -37,3 +37,47 @@ train_bal <- downSample(
 cat("\nBalanced training data distribution:\n")
 print(table(train_bal$Diabetes))
 
+# Cross-Validation Control
+control <- trainControl(
+  method = "cv",
+  number = 5,
+  classProbs = TRUE,
+  summaryFunction = twoClassSummary,
+  savePredictions = TRUE
+)
+
+# Tuning Grid for mtry
+p <- ncol(train_bal) - 1
+
+grid <- expand.grid(
+  mtry = unique(pmax(1, c(
+    floor(sqrt(p)/2),
+    floor(sqrt(p)),
+    floor(1.5*sqrt(p)),
+    floor(2*sqrt(p))
+  )))
+)
+
+print(grid)
+
+# Train Balanced RF with Tuning
+rf_balanced <- train(
+  Diabetes ~ .,
+  data = train_bal,
+  method = "rf",
+  metric = "ROC",
+  tuneGrid = grid,
+  trControl = control,
+  ntree = 500,
+  importance = TRUE
+)
+
+print(rf_balanced)
+
+# Test-Set Evaluation
+pred_prob <- predict(rf_balanced, test_data, type = "prob")[,"Yes"]
+pred_class <- predict(rf_balanced, test_data)
+
+cm <- confusionMatrix(pred_class, test_data$Diabetes, positive = "Yes")
+print(cm)
+
