@@ -367,6 +367,17 @@ Although overall accuracy declined relative to the no-information rate, this was
 
 Overall, the balanced Random Forest model achieved improved case detection while maintaining stable and interpretable performance.
 
+## Classification Performance
+```{r confusion-matrix}
+fourfoldplot(cm$table,
+color = c("#DA8A67", "#ABDDA4"),
+conf.level = 0,
+margin = 2,
+main = "Confusion Matrix - Balanced Random Forest")
+```
+The confusion matrix illustrates model behavior across both outcomes. While false positives increased as a result of rebalancing, false negatives decreased substantially. This tradeoff strengthens usefulness in clinical settings where missing diabetes cases is more costly than generating additional screenings.
+
+
 
 
 # Discussion (600-700 words)
