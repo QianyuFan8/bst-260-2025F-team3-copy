@@ -100,4 +100,24 @@ pr <- pr.curve(
 plot(pr, main = "Precision–Recall Curve - Balanced RF")
 print(paste("PR-AUC:", round(pr$auc.integral, 4)))
 
+# Feature Importance (Gini)
+rf_final <- rf_balanced$finalModel
 
+importance_matrix <- importance(rf_final)
+
+varImpPlot(rf_final, main = "Variable Importance (Gini Index)")
+
+# Permutation Importance (ROC-based)
+vi <- vi_permute(
+  rf_balanced,
+  train = train_bal,
+  target = "Diabetes",
+  metric = "roc_auc",
+  event_level = "second",
+  pred_wrapper = function(object, newdata) {
+    predict(object, newdata, type = "prob")[,"Yes"]
+  }
+)
+
+vip(vi, num_features = 10, geom = "col",
+    main = "Permutation Importance (Δ ROC-AUC)")
