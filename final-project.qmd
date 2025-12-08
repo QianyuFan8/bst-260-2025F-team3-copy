@@ -24,6 +24,9 @@ library(car)
 # load data
 raw_data <- read_rds("data/raw_data.rds")
 clean_data <- read_rds("data/clean_data.rds")
+
+# source model
+source("code/random_forest.R")
 ```
 
 # Abstract (150-200 words)
@@ -269,6 +272,18 @@ par(mfrow = c(1, 1))  # reset to default
 Together, these diagnostics and coefficient patterns support the adequacy of the logistic regression model and provide a strong basis for comparison with the Random Forest results presented later. Because logistic regression assumes linear and additive effects on the log-odds scale, any nonlinear relationships or higher-order interactions may remain undetected. To complement this parametric approach and assess more flexible predictive structures, we next implement a Random Forest model.
 
 
+## Random Forest
+
+To complement the logistic regression analysis, a Random Forest classifier was implemented to evaluate predictive performance and identify influential variables without imposing parametric assumptions.
+
+The model was trained using five-fold cross-validation via the caret framework. Hyperparameter tuning was performed over candidate values of the `mtry` parameter, representing the number of variables randomly sampled at each split. Model selection was based on area under the ROC curve (AUC). Class imbalance was addressed by downsampling the majority class during training, ensuring balanced class frequencies within cross-validation folds.
+
+Model evaluation was performed on an independent hold-out test set. Performance metrics included ROC–AUC, Precision–Recall AUC (PR–AUC), sensitivity, specificity, and balanced accuracy. ROC–AUC measures overall discrimination, whereas PR–AUC provides a more sensitive assessment under class imbalance by emphasizing the tradeoff between false positives and recall of diabetic cases.
+
+Feature importance was examined using two methods. First, Gini importance quantified how frequently and effectively variables reduced node impurity across trees. Second, permutation-based importance was computed by randomly shuffling each variable and measuring the resulting decrease in ROC–AUC. This approach directly reflects changes in predictive performance and allows for meaningful ranking across heterogeneous features.
+
+Random Forest was selected not as a replacement for logistic regression, but as a complementary tool to detect nonlinear relationships and interactions that parametric models may overlook. Agreement between regression coefficients and variable importance enhances confidence in model findings, while divergence may indicate higher-order relationships or multicollinearity effects.
+
 # Results (500-600 words)
 
 ## Logistic Regression Results
@@ -326,6 +341,7 @@ In this framework, each coefficient represents the change in the log-odds of hav
 
 
 To further assess variable importance and capture potential nonlinear relationships or interactions, a Random Forest model was subsequently applied using the same set of predictors.
+
 
 # Discussion (600-700 words)
 
