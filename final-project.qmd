@@ -342,6 +342,32 @@ In this framework, each coefficient represents the change in the log-odds of hav
 
 To further assess variable importance and capture potential nonlinear relationships or interactions, a Random Forest model was subsequently applied using the same set of predictors.
 
+## Random Forest Results
+
+After correcting for class imbalance, the Random Forest classifier showed good predictive performance on the test dataset, achieving an ROC–AUC of 0.746. This indicates that the model had strong ability to distinguish between individuals with and without diabetes.
+
+```{r rf-results-1}
+plot(roc_obj, col = "blue", legacy.axes = TRUE,
+main = "ROC Curve - Balanced Random Forest")
+```
+Figure X. ROC curve for the balanced Random Forest classifier. The model demonstrates good discriminative ability, with an AUC of 0.746.
+
+The Precision–Recall curve further illustrates classification performance in the presence of class imbalance.
+
+```{r rf-results-2}
+plot(pr, main = sprintf("Precision–Recall Curve (AUC = %.3f)", pr$auc.integral))
+```
+Figure X. Precision–Recall curve for diabetes classification. Performance reflects class imbalance, with declining precision as recall increases.
+
+Test-set accuracy was 0.70, with a balanced accuracy of 0.71, indicating stable classification across outcome groups. Sensitivity reached 0.72, meaning the model correctly identified approximately 72% of individuals with diabetes. Specificity was 0.69, showing comparably strong detection of non-diabetic individuals.
+
+The Precision–Recall AUC was 0.35. While lower than the ROC–AUC, this result is expected in imbalanced classification settings. With diabetes affecting only about 17% of the sample, precision naturally declines when recall increases. In this context, the observed PR-AUC reflects meaningful case-finding ability rather than poor model performance.
+
+Although overall accuracy declined relative to the no-information rate, this was a direct consequence of balancing class weights. Sensitivity improved substantially relative to the unweighted model, reflecting an intentional shift toward identifying clinically relevant cases rather than maximizing raw accuracy.
+
+Overall, the balanced Random Forest model achieved improved case detection while maintaining stable and interpretable performance.
+
+
 
 # Discussion (600-700 words)
 
