@@ -238,9 +238,9 @@ vif(logistic)
 
 Model assumptions were assessed through inspection of deviance residuals and influential observations. The residual vs. fitted plot showed no systematic pattern, indicating adequate model fit. Cook’s distance values were uniformly low, suggesting the absence of influential data points distorting coefficient estimates.
 
-```{r combined-plots, echo=FALSE, fig.cap="Residual vs Fitted and Cook's Distance Diagnostics"}
-par(mfrow = c(1, 2))  # two plots in one figure
-
+```{r combined-plots, echo=FALSE, fig.cap="Residual vs Fitted and Cook's Distance Diagnostics", fig.height=8, fig.width=6}
+par(mfrow = c(2, 1))  # two plots in one figure
+ mar = c(4, 4, 3, 2)
 # --- Plot 1: Residual vs Fitted ---
 plot(
   logistic$fitted.values,
