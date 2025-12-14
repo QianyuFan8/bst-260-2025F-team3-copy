@@ -29,6 +29,10 @@ library(vip)
 ourdata <- read_rds("data/ourdata.rds")
 dat_imputed <- read_rds("data/dat_imputed.rds")
 clean_data <- read_rds("data/clean_data.rds")
+
+# source model
+source("code/logistic_reg.R")
+source("code/random_forest.R")
 ```
 
 ```{r table 1, echo=FALSE}
@@ -180,15 +184,6 @@ p_cramer <- ggplot(cramer_df, aes(Var1, Var2, fill = value)) +
 
 ```{r table 3, echo=FALSE}
 # Compute VIFs
-mod <- glm(
-  Diabetes ~ Gender + Age + Race3 + Education + MaritalStatus + 
-             PovertyLvl + Work + HomeOwn + SleepHrsCategory + 
-             SleepTrouble + PhysActive + TVHrsDay + CompHrsDay + 
-             SmokeStatus + AlcoholCategory + LittleInterest + Depressed,
-  family = binomial, 
-  data = clean_data
-)
-
 vif_df <- vif(mod) |>
   as.data.frame() |>
   rownames_to_column(var = "Variable") |>

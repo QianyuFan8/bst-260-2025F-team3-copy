@@ -36,6 +36,7 @@ dat_imputed <- read_rds("data/dat_imputed.rds")
 clean_data <- read_rds("data/clean_data.rds")
 
 # source model
+source("code/logistic_reg.R")
 source("code/random_forest.R")
 ```
 
@@ -267,16 +268,6 @@ Regarding health behaviors, current smoking was associated with lower odds of di
 Among psychosocial factors, self-reported depressive symptoms were associated with higher odds of diabetes (OR = 1.43, 95% CI: 1.07–1.90; p = 0.016), whereas little interest in activities was not significantly associated with diabetes (OR = 1.08, 95% CI: 0.81–1.43; p = 0.585).
 
 ```{r lr result, echo=FALSE}
-# Fit the model
-mod <- glm(
-  Diabetes ~ Gender + Age + Race3 + Education + MaritalStatus + 
-             PovertyLvl + Work + HomeOwn + SleepHrsCategory + 
-             SleepTrouble + PhysActive + TVHrsDay + CompHrsDay + 
-             SmokeStatus + AlcoholCategory + LittleInterest + Depressed,
-  family = binomial, 
-  data = clean_data
-)
-
 # Get Estimate
 coef_raw <- tidy(mod, conf.int = FALSE, exponentiate = FALSE) %>%
   select(term, estimate_raw = estimate)
