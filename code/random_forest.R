@@ -19,11 +19,11 @@ trainIndex <- createDataPartition(df$Diabetes, p = 0.80, list = FALSE)
 train_data <- df[trainIndex, ]
 test_data  <- df[-trainIndex, ]
 
-cat("Training class distribution:\n")
-print(table(train_data$Diabetes))
-
-cat("\nTest class distribution:\n")
-print(table(test_data$Diabetes))
+# cat("Training class distribution:\n")
+# print(table(train_data$Diabetes))
+# 
+# cat("\nTest class distribution:\n")
+# print(table(test_data$Diabetes))
 
 # Downsample Training Data
 set.seed(123)
@@ -34,8 +34,8 @@ train_bal <- downSample(
   yname = "Diabetes"
 )
 
-cat("\nBalanced training data distribution:\n")
-print(table(train_bal$Diabetes))
+# cat("\nBalanced training data distribution:\n")
+# print(table(train_bal$Diabetes))
 
 # Cross-Validation Control
 control <- trainControl(
@@ -58,7 +58,7 @@ grid <- expand.grid(
   )))
 )
 
-print(grid)
+# print(grid)
 
 # Train Balanced RF with Tuning
 rf_balanced <- train(
@@ -72,23 +72,23 @@ rf_balanced <- train(
   importance = TRUE
 )
 
-print(rf_balanced)
+# print(rf_balanced)
 
 # Test-Set Evaluation
 pred_prob <- predict(rf_balanced, test_data, type = "prob")[,"Yes"]
 pred_class <- predict(rf_balanced, test_data)
 
 cm <- confusionMatrix(pred_class, test_data$Diabetes, positive = "Yes")
-print(cm)
+# print(cm)
 
 # ROC + AUC
 roc_obj <- roc(test_data$Diabetes, pred_prob)
 
-plot(roc_obj, col = "blue", legacy.axes = TRUE,
-     main = "ROC Curve - Balanced Random Forest")
+# plot(roc_obj, col = "blue", legacy.axes = TRUE,
+#      main = "ROC Curve - Balanced Random Forest")
 
 auc_value <- auc(roc_obj)
-print(paste("AUC:", round(auc_value, 4)))
+# print(paste("AUC:", round(auc_value, 4)))
 
 # Precision–Recall Curve
 pr <- pr.curve(
@@ -97,15 +97,15 @@ pr <- pr.curve(
   curve = TRUE
 )
 
-plot(pr, main = "Precision–Recall Curve - Balanced RF")
-print(paste("PR-AUC:", round(pr$auc.integral, 4)))
+# plot(pr, main = "Precision–Recall Curve - Balanced RF")
+# # print(paste("PR-AUC:", round(pr$auc.integral, 4)))
 
 # Feature Importance (Gini)
 rf_final <- rf_balanced$finalModel
 
 importance_matrix <- importance(rf_final)
 
-varImpPlot(rf_final, main = "Variable Importance (Gini Index)")
+# varImpPlot(rf_final, main = "Variable Importance (Gini Index)")
 
 # Permutation Importance (ROC-based)
 vi <- vi_permute(
@@ -119,5 +119,5 @@ vi <- vi_permute(
   }
 )
 
-vip(vi, num_features = 10, geom = "col",
-    main = "Permutation Importance (Δ ROC-AUC)")
+# vip(vi, num_features = 10, geom = "col",
+#     main = "Permutation Importance (Δ ROC-AUC)")
