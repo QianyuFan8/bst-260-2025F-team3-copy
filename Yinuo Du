@@ -1,0 +1,7 @@
+Individual Contribution – Yinuo Du
+
+I was responsible for the logistic regression component of the project. 
+
+My work included specifying and fitting the multivariable logistic regression model using the cleaned NHANES dataset, conducting model diagnostics (multicollinearity assessment, residual analysis, and influential point checks), and organizing model outputs into tables and figures.
+
+I wrote the logistic regression sections of the Methods and Results, including model specification, estimation, interpretation, and presentation of key findings, and ensured consistency with course requirements and the overall project structure.
