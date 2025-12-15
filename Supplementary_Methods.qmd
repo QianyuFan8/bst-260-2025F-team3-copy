@@ -238,3 +238,18 @@ kable(alcohol_table,
 ```
 
 
+```{r figure s3, fig.cap="Receiver operating characteristic (ROC) curve for the balanced Random Forest classifier evaluated on the held-out test set.", echo=FALSE, warning=FALSE}
+plot(roc_obj, col = "steelblue",legacy.axes = TRUE, print.auc = TRUE, print.auc.cex = 1.2, print.auc.col = "steelblue")
+```
+
+
+```{r figure s4, fig.cap="Precision–Recall curve for the Random Forest classifier evaluated on the test set.", echo=FALSE, warning=FALSE}
+plot(pr, main = sprintf("Precision–Recall Curve", pr$auc.integral))
+```
+
+
+```{r figure s5, fig.cap="Permutation-based variable importance for the Random Forest classifier, ranked by decrease in ROC–AUC.", echo=FALSE, warning=FALSE}
+vip(vi, num_features = 15, geom = "col")
+```
+
+

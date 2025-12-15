@@ -10,9 +10,7 @@ library(here)
 set.seed(123)
 
 # Load Dataset
-df <- readRDS(here("data", "clean_data.rds")) 
-#%>%
-#  mutate(Diabetes = factor(Diabetes, levels = c("Yes", "No")))  # positive = Yes
+df <- readRDS(here("data", "clean_data.rds"))
 
 # Train–Test Split
 trainIndex <- createDataPartition(df$Diabetes, p = 0.80, list = FALSE)
