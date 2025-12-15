@@ -187,41 +187,40 @@ We employed two complementary analytical approaches to address our research ques
 We fitted a multivariable logistic regression model with diabetes status (yes/no) as the binary outcome and all retained socioeconomic, behavioral, and psychosocial variables as predictors. The model was specified as:
 $$
 \begin{aligned}
-\log\left(\frac{P(\mathrm{Diabetes}=\mathrm{Yes})}{1-P(\mathrm{Diabetes}=\mathrm{Yes})}\right)
-&= \beta_0 
+& \log\left(\frac{P(\mathrm{Diabetes}=\mathrm{Yes})}{1-P(\mathrm{Diabetes}=\mathrm{Yes})}\right)
+= \beta_0 
 + \beta_1 \mathrm{Gender}_{\text{male}}
 + \beta_2 \mathrm{Age}
 + \beta_3 \mathrm{Race}_{\text{White}}
 + \beta_4 \mathrm{Race}_{\text{Asian}}
-+ \beta_5 \mathrm{Race}_{\text{Mexican}}
++ \beta_5 \mathrm{Race}_{\text{Mexican}}\\
+&
 + \beta_6 \mathrm{Race}_{\text{Hispanic}}
-+ \beta_7 \mathrm{Race}_{\text{Other}} \\
-&\quad
++ \beta_7 \mathrm{Race}_{\text{Other}} 
 + \beta_8  \mathrm{Education}_{\text{SomeCollege}}
 + \beta_9  \mathrm{Education}_{\text{College+}}
-+ \beta_{10} \mathrm{MaritalStatus}_{\text{Married}}
-+ \beta_{11} \mathrm{MaritalStatus}_{\text{NotMarried}} \\
-&\quad
++ \beta_{10} \mathrm{MaritalStatus}_{\text{Married}}\\
+&
++ \beta_{11} \mathrm{MaritalStatus}_{\text{NotMarried}} 
 + \beta_{12} \mathrm{Poverty}_{\text{MiddleIncome}}
 + \beta_{13} \mathrm{Poverty}_{\text{LowIncome}}
-+ \beta_{14} \mathrm{Work}_{\text{NotWorking}}
-+ \beta_{15} \mathrm{Work}_{\text{Looking}} \\
-&\quad
++ \beta_{14} \mathrm{Work}_{\text{NotWorking}} \\
+&
++ \beta_{15} \mathrm{Work}_{\text{Looking}}
 + \beta_{16} \mathrm{HomeOwn}_{\text{Rent}}
 + \beta_{17} \mathrm{HomeOwn}_{\text{Other}}
 + \beta_{18} \mathrm{Sleep}_{\text{Short}}
 + \beta_{19} \mathrm{Sleep}_{\text{Long}} \\
-&\quad
+&
 + \beta_{20} \mathrm{SleepTrouble}_{\text{Yes}}
 + \beta_{21} \mathrm{PhysActive}_{\text{Yes}}
 + \beta_{22} \mathrm{TVHrsDay}
-+ \beta_{23} \mathrm{CompHrsDay} \\
-&\quad
-+ \beta_{24} \mathrm{Smoke}_{\text{Former}}
++ \beta_{23} \mathrm{CompHrsDay} 
++ \beta_{24} \mathrm{Smoke}_{\text{Former}}\\
+&
 + \beta_{25} \mathrm{Smoke}_{\text{Current}}
 + \beta_{26} \mathrm{Alcohol}_{\text{NonDrinker}}
-+ \beta_{27} \mathrm{Alcohol}_{\text{Heavy}} \\
-&\quad
++ \beta_{27} \mathrm{Alcohol}_{\text{Heavy}} 
 + \beta_{28} \mathrm{LittleInterest}_{\text{Yes}}
 + \beta_{29} \mathrm{Depressed}_{\text{Yes}}
 \end{aligned}
