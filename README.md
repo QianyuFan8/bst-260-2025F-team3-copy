@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # Risk Factors for Diabetes Among Adults Aged 40+: A Combined Logistic Regression and Random Forest Analysis Using NHANES Data
 
 ## Project Overview
