@@ -42,24 +42,25 @@ source("code/random_forest.R")
 
 # Abstract 
 
-Diabetes disproportionately affects U.S. adults aged 40 years and older, yet the combined influence of socioeconomic, behavioral, and psychosocial determinants remains understudied. Using data from 2,873 adults in the 2009–2012 NHANES cycles, this study examined (1) how these factors predict diabetes risk and (2) whether variable importance rankings differ between logistic regression and a Random Forest model. After extensive data cleaning, transformation, and KNN imputation, we fitted a multivariable logistic regression model and trained a Random Forest classifier with cross-validation and downsampling to address class imbalance. Logistic regression identified age, race, low income, home rental, short sleep duration, sleep trouble, computer use, and depressive symptoms as significant predictors of diabetes. Random Forest variable importance rankings showed strong concordance with logistic regression—particularly for age, race, poverty, gender, and sedentary behaviors—while highlighting potential nonlinear effects for marital status, physical activity, and smoking. Together, findings underscore the multifactorial nature of diabetes risk and the value of integrating statistical and machine-learning approaches to identify both linear and complex determinants of disease among aging adults.
+Diabetes disproportionately affects U.S. adults aged 40 years and older, yet the combined influence of socioeconomic, behavioral, and psychosocial determinants remains understudied. Using data from 2,873 adults in the 2009–2012 NHANES cycles, this study examined (1) how these factors predict diabetes risk and (2) whether variable importance rankings differ between logistic regression and a Random Forest model. After extensive data cleaning, transformation, and KNN imputation, we fitted a multivariable logistic regression model and trained a Random Forest classifier with cross-validation and downsampling to address class imbalance. Logistic regression identified age, race, low income, home rental status, short sleep duration, sleep trouble, computer use, and depressive symptoms as significantly associated with diabetes. Random Forest variable importance rankings showed strong concordance with logistic regression, particularly for age, race, poverty, gender, and sedentary behaviors, while highlighting potential nonlinear effects for marital status, physical activity, and smoking. Together, findings underscore the multifactorial nature of diabetes risk and the value of integrating statistical and machine-learning approaches to identify both linear and complex determinants of disease among aging adults.
 
-# Introduction
+# Introduction 
 
 Diabetes mellitus remains one of the most pressing chronic diseases affecting U.S. adults, with prevalence increasing substantially with age. According to the CDC's National Diabetes Statistics Report, 18.9% of adults aged 45-64 and 29.2% of adults aged 65 years and older have diabetes, reflecting an urgent need to understand the factors that place middle-aged and older adults at elevated risk (Centers for Disease Control and Prevention, 2024). Type 2 diabetes, which accounts for the vast majority of cases, develops through a multifactorial interplay of behavioral, psychosocial, metabolic, and socioeconomic determinants. As the population ages, identifying modifiable risk factors that influence diabetes onset among adults aged 40 and older is critical for guiding effective clinical screening, public health planning, and targeted intervention strategies.
 
-A substantial literature has examined the role of socioeconomic status, lifestyle factors, and psychosocial stressors in shaping diabetes risk. Socioeconomic status, for example, has consistently been recognized as one of the strongest predictors of diabetes. Analysis using national socioeconomic survey data demonstrated that gender, age, race, education, marital status, occupation, income, and debt levels were significantly associated with diabetes prevalence (Suwannaphant et al., 2017). Similarly, a 2023 study using NHANES data found a negative nonlinear association between income-to-poverty ratio and diabetes risk, independent of demographic and behavioral confounders, indicating that participants with lower socioeconomic status had a higher risk of diabetes (Liu et al., 2023). Behavioral factors, including physical inactivity, sleep quantity or quality, alcohol consumption patterns, and smoking, also play a well-established role in diabetes development (Ismail et al., 2021). Sleep duration, in particular, has been shown to exhibit a U-shaped relationship with diabetes risk: both short sleep (<6 hours) and long sleep (>9 hours) are associated with elevated odds compared to adequate sleep (Cappuccio et al., 2010; Shan et al., 2015). Similarly, while moderate alcohol consumption has been hypothesized to confer metabolic benefits in some populations, observational studies face challenges in disentangling causal effects from confounding by socioeconomic status and lifestyle patterns. Recent research has also highlighted the role of psychosocial determinants, demonstrating that symptoms of depression and anxiety contribute meaningfully to diabetes risk, potentially through both behavioral pathways (e.g., poor adherence to healthy lifestyles) and physiological mechanisms (e.g., chronic stress-induced metabolic dysregulation) (Naicker et al., 2018). Despite extensive evidence, relatively few studies simultaneously examine socioeconomic, behavioral, and psychosocial factors within a single representative dataset for U.S. adults aged 40 and older.
+A substantial literature has examined the role of socioeconomic status, lifestyle factors, and psychosocial stressors in shaping diabetes risk. Socioeconomic status, for example, has consistently been recognized as having one of the strongest associations with diabetes. Analysis using national socioeconomic survey data demonstrated that gender, age, race, education, marital status, occupation, income, and debt levels were significantly associated with diabetes prevalence (Suwannaphant et al., 2017). Similarly, a 2023 study using NHANES data found a negative nonlinear association between income-to-poverty ratio and diabetes risk, independent of demographic and behavioral confounders, indicating that participants with lower socioeconomic status had a higher risk of diabetes (Liu et al., 2023). Behavioral factors, including physical inactivity, sleep quantity or quality, alcohol consumption patterns, and smoking, also play a well-established role in diabetes development (Ismail et al., 2021). Sleep duration, in particular, has been shown to exhibit a U-shaped relationship with diabetes risk: both short sleep (\<6 hours) and long sleep (\>9 hours) are associated with elevated odds compared to adequate sleep (Cappuccio et al., 2010; Shan et al., 2015). Similarly, while moderate alcohol consumption has been hypothesized to confer metabolic benefits in some populations, observational studies face challenges in disentangling causal effects from confounding by socioeconomic status and lifestyle patterns. Recent research has also highlighted the role of psychosocial determinants, demonstrating that symptoms of depression and anxiety contribute meaningfully to diabetes risk, potentially through both behavioral pathways (e.g., poor adherence to healthy lifestyles) and physiological mechanisms (e.g., chronic stress-induced metabolic dysregulation) (Naicker et al., 2018). Despite extensive evidence, relatively few studies simultaneously examine socioeconomic, behavioral, and psychosocial factors within a single representative dataset for U.S. adults aged 40 and older.
 
 Furthermore, most prior studies have relied exclusively on traditional regression-based approaches, which, while interpretable, may overlook complex interactions and nonlinear relationships among risk factors. Machine learning methods, such as random forests, offer complementary advantages by capturing intricate patterns without assuming linearity or requiring explicit specification of interaction terms. Comparing the variable importance rankings from machine learning models with the statistically significant predictors identified through logistic regression can provide deeper insights into which factors most reliably predict diabetes risk across different analytical frameworks.
 
 The present study addresses these gaps by leveraging data from the National Health and Nutrition Examination Survey (NHANES) to investigate two primary research questions: (1) Among U.S. adults aged 40 years and older, how do socioeconomic, behavioral, and psychosocial factors influence the risk of diabetes? (2) How do the variable importance rankings from a random forest model compare with the statistically significant predictors from logistic regression? By integrating classical statistical inference with modern machine learning, this study aims to provide a comprehensive, multidimensional assessment of diabetes risk factors, with implications for targeted prevention and intervention strategies in an aging population.
 
 # Methods
+
 ## Data Source and Study Population
 
-The National Health and Nutrition Examination Survey (NHANES) offers an ideal platform for addressing this research question. NHANES integrates clinically validated biomarker measurements, standardized physical examinations, and detailed demographic, behavioral, and psychosocial survey data, enabling a comprehensive, multidimensional analysis of diabetes risk factors. In this project, we utilized the NHANES dataset available through the NHANES R package, which provides a streamlined version of 10,000 observations resampled from NHANESraw to mitigate oversampling effects inherent in the original survey design. The data include variables from the 2009-2010 and 2011-2012 survey cycles, comprising 76 variables across demographic, socioeconomic, behavioral, physiological, and psychosocial domains (Supplementary Table 1).
+We used data from the National Health and Nutrition Examination Survey (NHANES) R package, which provides a streamlined dataset of 10,000 observations from the 2009–2010 and 2011–2012 survey cycles. NHANES integrates standardized clinical measurements with detailed demographic, socioeconomic, behavioral, and psychosocial survey data, making it well suited for modeling diabetes risk factors (Supplementary Table 1). 
 
-Because our primary objective is to model and compare predictors rather than estimate nationally weighted prevalence, the NHANES package is more suitable than NHANESraw; it provides a structure conducive to both classical statistical modeling and modern machine-learning approaches while avoiding the survey-weight complexity required for population-level inference. We restricted our analytic sample to adults aged 40 years and older, as this age group bears the highest diabetes burden and represents the target population for most prevention and screening programs. After removing duplicate observations (identified by participant ID) and excluding pregnant women (whose metabolic profiles differ substantially from the non-pregnant population), our final analytic dataset consisted of 2,873 participants.
+Because our objective was to assess diabetes risk factors and compare variable importance across modeling approaches, we used the NHANES package rather than the survey-weighted NHANESraw data, avoiding additional complexity from sampling weights. Analyses were restricted to adults aged ≥40 years. After removing duplicate records and excluding pregnant women, the final analytic sample comprised 2,873 participants.
 
 ## Data Cleaning and Preprocessing
 
@@ -96,44 +97,15 @@ alcohol_inconsist <- ourdata |>
 bpdiaave_outlier / physactive_inconsist / alcohol_inconsist
 ```
 
-Figure 1 revealed several data quality issues requiring correction prior to modeling. First, diastolic blood pressure (BPDiaAve) contained biologically implausible values of zero, which we recoded as missing (NA) to avoid spurious associations. We also identified logical inconsistencies in physical activity reporting: some participants indicated no moderate or vigorous-intensity physical activity (PhysActive = "No") but reported positive values for PhysActiveDays. We corrected this by setting PhysActiveDays to zero for all participants who reported no physical activity. Additionally, alcohol consumption variables showed inconsistencies: participants who consumed less than 12 drinks of any type of alcoholic beverage in any one year (Alcohol12PlusYr = "No") sometimes had AlcoholDay × AlcoholYear (Total Alcohol Consumption) values exceeding 12 drinks. We recoded these implausible values as missing.
+Figure 1 identified several data quality issues requiring correction prior to analysis. Diastolic blood pressure (BPDiaAve) contained biologically implausible zero values, which were recoded as missing. Logical inconsistencies were observed in physical activity reporting: participants reporting no moderate or vigorous activity (PhysActive = “No”) but positive PhysActiveDays values; these were corrected by setting PhysActiveDays to zero. Alcohol variables also showed inconsistencies, whereby participants reporting fewer than 12 drinks in any one year (Alcohol12PlusYr = “No”) had AlcoholDay × AlcoholYear values exceeding 12; these values were recoded as missing.
 
-In our dataset, missing data varied substantially across variables (Supplementary Table 2). PhysActiveDays and SmokeNow each had over 50% missingness, AlcoholDay and AlcoholYear exceeded 20%, and Race3, TVHrsDay, and CompHrsDay exhibited complete missingness for the 2009-2010 survey cycle due to data collection artifacts. To retain all 2,873 participants and maximize statistical power, we employed k-nearest neighbors (KNN) imputation (k = 5) using the VIM package. KNN imputes missing values by identifying the k most similar observations based on Euclidean distance and using their mean (numerical) or median/mode (categorical) values. Unlike single-value methods such as mean or median imputation, KNN preserves correlations between variables. 
-
-However, KNN imputation has important limitations. It assumes missingness is at random (MAR) meaning that missingness must depend only on observed variables; violations of this assumption may introduce bias. In addition, KNN is sensitive to the choice of k: small values may overfit noise, while large values may oversmooth important structure. We selected k = 5 as a balanced choice. Despite these limitations, KNN was preferable to complete-case analysis (which would discard >40% of the sample) or mean/median imputation (which attenuates relationships). 
+Missingness varied substantially across variables (Supplementary Table 2). To retain all participants, we applied k-nearest neighbors (KNN) imputation (k = 5). KNN imputes missing values based on similarity in observed covariates, preserving multivariable relationships more effectively than single-value imputation. Although KNN assumes missingness at random and is sensitive to the choice of k, it was preferred over mean/median imputation.
 
 ## Variable Selection and Transformation
 
-Our variable selection was guided by theoretical relevance to diabetes, prior literature, and avoidance of post-treatment or mediator bias. We excluded variables not applicable to adults aged 40+, including child anthropometrics (Length, HeadCirc, BMICatUnder20yrs, TVHrsDayChild, CompHrsDayChild) and pregnancy-related measures (nPregnancies, nBabies, Age1stBaby). Variables with limited relevance to diabetes, such as testosterone, urinary flow/volume measures, marijuana-use indicators, and sexual behavior variables, were also removed. To prevent mediator adjustment, we excluded physiological measures that likely lie on the causal pathway (BMI, Pulse, BPSysAve, BPDiaAve, DirectChol, TotChol, repeated BP readings). Post-treatment health indicators (HealthGen, DaysPhysHlthBad, DaysMentHlthBad) were omitted to avoid collider bias. Redundant variables including Race1, AgeDecade, AgeMonths, HHIncome, HHIncomeMid, HomeRooms, Weight, Height, BMI_WHO, DiabetesAge, PhysActiveDays, SmokeAge, and Smoke100n were removed due to overlap with retained measures. This process yielded a final set of socioeconomic, behavioral, and psychosocial predictors with strong theoretical justification. Figure 2 summarizes the distribution of selected variables.
+Variable selection was guided by theoretical relevance to diabetes, prior literature, and avoidance of post-treatment or mediator bias. We excluded: (1) variables not applicable to adults aged ≥40 years (child anthropometrics, pregnancy measures); (2) variables with limited diabetes relevance (testosterone, urinary flow, marijuana use, sexual behavior); (3) physiological mediators on the causal pathway (BMI, blood pressure, cholesterol); (4) post-treatment health indicators to prevent collider bias; and (5) redundant variables. This process yielded a parsimonious set of socioeconomic, behavioral, and psychosocial predictors.
 
-```{r figure2, fig.cap="Distribution of Numeric and Categorical Variables)", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
-# Histogram plots: numerical variables
-ourdata_num_vars <- dat_imputed |>
-  select(Age, Poverty, SleepHrsNight, AlcoholDay, AlcoholYear)
-
-hist_plots <- map(names(ourdata_num_vars), function(v) {
-  ggplot(ourdata_num_vars, aes_string(x = v)) +
-    geom_histogram(bins = 30, fill = "#377EB8", color = "white", na.rm = TRUE) +
-    theme_minimal(base_size = 10)})
-
-# Barplots: categorical variables
-ourdata_cat_vars <- dat_imputed |>
-  select(Gender, Race3, Education, MaritalStatus, Work, HomeOwn, SleepTrouble, PhysActive, 
-         TVHrsDay, CompHrsDay, Alcohol12PlusYr, SmokeNow, Smoke100, LittleInterest, Depressed)
-
-bar_plots <- map(names(ourdata_cat_vars), function(v) {
-  ggplot(ourdata_cat_vars, aes_string(x = v)) +
-    geom_bar(fill = "steelblue", color = "white", na.rm = TRUE) +
-    theme_minimal(base_size = 10) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-})
-
-all_plots <- c(hist_plots, bar_plots)
-combined_plot_all <- wrap_plots(all_plots, ncol = 5) 
-combined_plot_all
-```
-
-Retained variables were then harmonized and recoded. Following prior evidence of nonlinear income–diabetes associations (Liu et al., 2023), Poverty (IPR) was categorized into Low (≤1.0), Middle (1.0–4.0), and High (≥4.0) income groups. Education was collapsed into ≤High School, Some College, and College+, and MaritalStatus into Never Married, Married, and Not Married (Divorced, Live Partner, Separated, Widowed). SleepHrsNight, which demonstrates a U-shaped association with diabetes (Cappuccio et al., 2010; Shan et al., 2015), was categorized into Short (<7 hours), Adequate (7–9 hours), and Long (>9 hours). Smoking status was derived from SmokeNow and Smoke100 as Never, Former, and Current. Alcohol use was quantified as annual drinks (AlcoholDay × AlcoholYear) and categorized into Non-drinker, Light–Moderate (<730 drinks/year), and Heavy (≥730 drinks/year). Ordinal sedentary behavior variables (TVHrsDay, CompHrsDay) were converted to numeric midpoints to approximate daily hours. Psychosocial variables (LittleInterest, Depressed) were dichotomized to reflect presence/absence of depressive symptoms. 
+Retained variables (Supplementary Figure 1) were harmonized and recoded for interpretability. Based on prior evidence of nonlinear associations with diabetes (Liu et al., 2023), poverty (IPR) was categorized as Low (≤1.0), Middle (1.0–4.0), or High (≥4.0). Education and marital status were collapsed into three-category measures. Sleep duration was categorized as Short (\<7 h), Adequate (7–9 h), or Long (\>9 h) to capture its U-shaped relationship with diabetes (Cappuccio et al., 2010; Shan et al., 2015). Smoking status was derived as Never, Former, or Current, and alcohol consumption was categorized using annual intake (AlcoholDay × AlcoholYear) and categorized as Non-drinker, Light–Moderate (\<730 drinks/year), or Heavy (≥730 drinks/year). Ordinal sedentary behavior variables were converted to numeric midpoints, and depressive symptom indicators were dichotomized to reflect clinically meaningful symptom presence.
 
 ## Exploratory Data Analysis
 
@@ -176,15 +148,15 @@ p_cat <- ggplot(cat_vals_long, aes(x = Value, fill = Diabetes)) +
   plot_annotation(tag_levels = "A")
 ```
 
-After variable transformation, we conducted exploratory data analysis in Figure 3 to assess distributions and multicollinearity. Violin-boxplot overlays for continuous variables showed that participants with diabetes were significantly older, while sedentary behavior variables (TVHrsDay, CompHrsDay) exhibited broad overlap between groups. Among categorical variables, diabetes prevalence was higher among those with lower education, lower income, sleep trouble, and physical inactivity. Former smokers showed higher diabetes prevalence than never smokers, consistent with reverse causation. Assessment of multicollinearity indicated no problematic correlations among retained variables (all pairwise correlations r < 0.7; Supplementary Figure 1), supporting their suitability for subsequent modeling.
+Following variable transformation, exploratory data analysis was conducted to examine variable distributions (Figure 2). Participants with diabetes were older on average, while sedentary behavior measures showed substantial overlap between outcome groups. Higher diabetes prevalence was observed among participants with lower income, lower education, sleep trouble, physical inactivity, and former smoking. No problematic multicollinearity was detected among retained predictors (all pairwise correlations r < 0.7; Supplementary Figure 2).
 
 ## Statistical Analysis
 
-We employed two complementary analytical approaches to address our research questions and evaluate the robustness of identified predictors.
+We employed two complementary approaches to evaluate diabetes risk factors.
 
 ### Logistic Regression
 
-We fitted a multivariable logistic regression model with diabetes status (yes/no) as the binary outcome and all retained socioeconomic, behavioral, and psychosocial variables as predictors. The model was specified as:
+We fitted a multivariable logistic regression model with diabetes status (yes/no) as the outcome and all retained predictors as covariates. The model was specified as: 
 $$
 \begin{aligned}
 & \log\left(\frac{P(\mathrm{Diabetes}=\mathrm{Yes})}{1-P(\mathrm{Diabetes}=\mathrm{Yes})}\right)
@@ -226,35 +198,32 @@ $$
 \end{aligned}
 $$
 
-where reference categories for categorical variables: Female (gender), Black (race/ethnicity), ≤High School (education), Never Married (marital status), High Income (poverty level), Working (employment), Own (home ownership), Adequate 7–9 hours (sleep duration), No (sleep trouble), Inactive (physical activity), Never Smoker (smoking status),Light-Moderate Drinker (alcohol consumption), No (little interest and depressed mood). Age, TVHrsDay, and CompHrsDay are continuous variables; odds ratios represent the change in diabetes odds per one-year increase in age and per one-hour increase in screen time.
-
-Logistic regression was selected for its ability to provide interpretable odds ratios (ORs) with corresponding confidence intervals, enabling identification of statistically significant predictors and quantification of their associations with diabetes risk. Model diagnostics included variance inflation factors (VIFs) to assess multicollinearity and standard diagnostic plots to evaluate overall model adequacy.
+Odds ratios (ORs) with 95% confidence intervals were reported, enabling identification of statistically significant predictors and quantification of their associations with diabetes risk. Model diagnostics included variance inflation factors and standard diagnostic plots.
 
 ### Random Forest
 
-To complement the parametric logistic regression model, we trained a Random Forest classifier using the same set of predictors. Random forests are ensemble learning methods that aggregate predictions from multiple decision trees, each trained on a bootstrap sample of the data. Unlike logistic regression, random forests do not assume linearity, making them well-suited for capturing complex, nonlinear relationships. The model was trained using five-fold cross-validation via the caret framework. Hyperparameter tuning was performed over candidate values of the `mtry` parameter, representing the number of variables randomly sampled at each split. Model selection was based on area under the ROC curve (AUC). Class imbalance was addressed by downsampling the majority class during training, ensuring balanced class frequencies within cross-validation folds. Model evaluation was performed on an independent hold-out test set. Performance metrics included ROC–AUC, Precision–Recall AUC (PR–AUC), sensitivity, specificity, and balanced accuracy. ROC–AUC measures overall discrimination, whereas PR–AUC provides a more sensitive assessment under class imbalance by emphasizing the tradeoff between false positives and recall of diabetic cases. Variable importance was assessed using permutation-based importance, defined as the decrease in ROC–AUC after randomly permuting each predictor.
+A Random Forest classifier was trained using the same predictors. The model was trained with five-fold cross-validation using the caret framework, with tuning of the mtry parameter and downsampling to address class imbalance. Performance was evaluated on an independent test set using ROC–AUC, sensitivity, specificity, and balanced accuracy. Variable importance was assessed using permutation-based importance, defined as the decrease in ROC–AUC following predictor permutation.
 
 ### Comparison
 
-We compared the top 15 predictors from Random Forest (ranked by permutation-based importance) with the top 15 predictors from logistic regression (ranked by |z-value|). Concordance between methods was assessed by examining overlap in the top-ranked variables and noting areas of agreement and divergence. High agreement between parametric (logistic regression) and non-parametric (Random Forest) approaches would strengthen confidence in the robustness of identified risk factors, while divergence may indicate nonlinear relationships or interactions that logistic regression does not capture.
+We compared the top 15 predictors from Random Forest (ranked by permutation-based importance) with the top 15 predictors from logistic regression (ranked by \|z-value\|). Concordance and divergence between methods were used to assess robustness and potential nonlinear effects.
 
-# Results 
+# Results
 
-Our final analytic sample comprised 2,873 adults aged 40 years and older, of whom 502 (17.5%) had diabetes and 2,371 (82.5%) did not.
+Our final sample comprised 2,873 adults aged ≥40 years, of whom 502 (17.5%) had diabetes.
 
 ## Logistic Regression Results
 
-Table 1 presents estimated coefficients, odds ratios (ORs) and 95% confidence intervals (CIs) for our multivariable logistic regression model. Model diagnostics confirmed the validity of results: variance inflation factors (VIF) were all below 5, indicating minimal multicollinearity (Supplementary Table S3), and standard diagnostic plots showed no major violations of model assumptions (Supplementary Figure S2).
+Table 1 presents estimated coefficients, odds ratios (ORs), and 95% confidence intervals (CIs) from the multivariable logistic regression model. Model diagnostics indicated no major violations: all variance inflation factors (VIFs) were below 5 (Supplementary Table 3), and diagnostic plots suggested adequate model fit (Supplementary Figure 3).
 
-Among demographic confounders, age exhibited the strongest association with diabetes risk, with each additional year associated with a 4% increase in the odds of diabetes (OR = 1.04, 95% CI: 1.03–1.05; p < 0.001). Significant racial and ethnic disparities were observed. Compared with Black participants, White (OR = 0.45, 95% CI: 0.33–0.62; p < 0.001), Asian (OR = 0.48, 95% CI: 0.26–0.84; p = 0.013), and Hispanic participants (OR = 0.55, 95% CI: 0.31–0.93; p = 0.028) had substantially lower odds of diabetes. Male participants had 33% higher odds of diabetes compared with females (OR = 1.33, 95% CI: 1.07–1.66; p = 0.012).
+Age showed the strongest association with diabetes, with each additional year associated with a 4% increase in odds. Significant racial and ethnic disparities were observed: compared with Black participants, White, Asian, and Hispanic participants had lower odds of diabetes. Male participants had 33% higher odds than females.
 
-Among socioeconomic factors, income-to-poverty ratio demonstrated a graded association with diabetes risk. Participants in the low-income group had 49% higher odds of diabetes compared with those in the high-income group (OR = 1.49, 95% CI: 1.03–2.15; p = 0.034), while those in the middle-income group showed a non-significant trend toward higher odds (OR = 1.25, 95% CI: 0.97–1.63; p = 0.087). Renting a home, compared with homeownership, was associated with higher odds of diabetes (OR = 1.41, 95% CI: 1.08–1.83; p = 0.011). Education level, marital status, and employment status were not significantly associated with diabetes after adjustment.
+**Socioeconomic factors.** poverty (IPR) demonstrated a graded association: low-income participants had 49% higher odds compared with high-income participants, while middle-income showed a marginal association (OR = 1.25, p = 0.087). Renting was associated with 41% higher odds compared with homeownership. Education, marital status, and employment were not significant.
 
-Sleep-related variables emerged as important behavioral correlates of diabetes. Short sleep duration (<7 hours) was associated with higher odds of diabetes (OR = 1.26, 95% CI: 1.01–1.56; p = 0.037), and self-reported sleep trouble was also positively associated with diabetes risk (OR = 1.36, 95% CI: 1.08–1.71; p = 0.009). Among sedentary behaviors, computer usage hours exhibited a dose–response relationship, with each additional hour associated with a 13% increase in the odds of diabetes (OR = 1.13, 95% CI: 1.03–1.24; p = 0.010). Television viewing time showed a borderline association (OR = 1.07 per additional hour, 95% CI: 1.00–1.16; p = 0.061). Physical activity was associated with lower odds of diabetes, although this association did not reach statistical significance (OR = 0.80, 95% CI: 0.64–1.01; p = 0.057).
+**Behavioral factors.** Short sleep duration (\<7 hours) was associated with higher diabetes odds, as was self-reported sleep trouble. Computer use showed a dose-response relationship (OR = 1.13 per hour, p = 0.010), while TV viewing showed borderline significance (OR = 1.07, p = 0.061). Physical activity trended toward protection. Current smoking was inversely associated with diabetes, while former smoking showed no association. Alcohol consumption was not significant.
 
-Regarding health behaviors, current smoking was associated with lower odds of diabetes compared with never smoking (OR = 0.74, 95% CI: 0.55–0.99; p = 0.046), whereas former smoking showed no significant association (OR = 1.07, 95% CI: 0.83–1.36; p = 0.607). Alcohol consumption categories were not significantly associated with diabetes risk.
-
-Among psychosocial factors, self-reported depressive symptoms were associated with higher odds of diabetes (OR = 1.43, 95% CI: 1.07–1.90; p = 0.016), whereas little interest in activities was not significantly associated with diabetes (OR = 1.08, 95% CI: 0.81–1.43; p = 0.585).
+**Psychosocial factors.** Depressive symptoms were associated with 43% higher diabetes odds, while little interest in activities was 
+not significant.
 
 ```{r lr result, echo=FALSE}
 # Get Estimate
@@ -305,27 +274,22 @@ kable(result_table,
       align = c("l", "r", "r", "r", "r", "c"))
 ```
 
-
-## Random Forest Results 
+## Random Forest Results
 
 A Random Forest classifier was trained using the same set of socioeconomic, behavioral, and psychosocial predictors as the logistic regression model. Model performance was evaluated on an independent held-out test set.
 
-The Random Forest achieved an overall accuracy of 0.645 (95\% CI: 0.604–0.684). Because the outcome was imbalanced, balanced accuracy is also reported and equaled 0.678. Sensitivity was 0.730, indicating that 73.0\% of individuals with diabetes were correctly classified, while specificity was 0.627, indicating that 62.7\% of non-diabetic individuals were correctly identified. The positive predictive value was 0.292, and the negative predictive value was 0.917. The prevalence of diabetes in the test set was 17.4\%.
+The Random Forest achieved an overall accuracy of 0.645 (95% CI: 0.604–0.684). Because the outcome was imbalanced, balanced accuracy is also reported and equaled 0.678. Sensitivity was 0.730, indicating that 73.0% of individuals with diabetes were correctly classified, while specificity was 0.627, indicating that 62.7% of non-diabetic individuals were correctly identified. The positive predictive value was 0.292, and the negative predictive value was 0.917. The prevalence of diabetes in the test set was 17.4%.
 
-Figure 4 presents the confusion matrix for the Random Forest classifier. Of 100 individuals predicted to have diabetes, 73 were true positives and 27 were false positives. Among those predicted not to have diabetes, 297 were true negatives and 177 were false negatives.
-
-```{r confusion-matrix, fig.cap="Confusion matrix for the Random Forest classifier on the test set."}
+```{r confusion-matrix, fig.cap="Confusion matrix for the Random Forest classifier on the test set.", echo=FALSE}
 fourfoldplot(cm$table,
 color = c("steelblue", "lightcoral"),
 conf.level = 0,
 margin = 2)
 ```
 
-The receiver operating characteristic (ROC) curve for the Random Forest model is shown in (Supplementary Figure 3). The area under the ROC curve (AUC) was 0.719, indicating good discrimination between individuals with and without diabetes across classification thresholds.
+The receiver operating characteristic (ROC) curve for the Random Forest model is shown in (Supplementary Figure 4). The area under the ROC curve (AUC) was 0.719, indicating good discrimination between individuals with and without diabetes across classification thresholds. Figure 3 presents the confusion matrix for the Random Forest classifier. Of 100 individuals predicted to have diabetes, 73 were true positives and 27 were false positives. Among those predicted not to have diabetes, 297 were true negatives and 177 were false negatives.
 
 ## Comparison of Variable Importance
-
-Variable importance was assessed for both models to compare how predictors were prioritized across parametric and non-parametric approaches.
 
 ```{r figure4, fig.cap="Comparison of Top 10 Variables Identified by Logistic Regression (Left) vs. Random Forest (Right)", echo=FALSE}
 # Logistic importance plot
@@ -365,24 +329,22 @@ plot_rf <- vip(vi, num_features = 10, geom = "col") +
 
 plot_lr | plot_rf
 ```
-Figure 5 compares the top 10 variables from logistic regression (ranked by |z-value|) with those from Random Forest (ranked by permutation-based importance). Strong concordance was observed between the two methods. Age dominated both rankings with the highest importance, followed by race (White vs. Black) in second position. Of the top 10 predictors identified by Random Forest, 5 overlapped with the logistic regression top 10, including age, race, poverty, gender, and computer usage hours. All 5 overlapping variables were statistically significant (p < 0.05) in the logistic regression model.
 
-Notable differences emerged in mid-tier rankings. Sleep trouble and home ownership ranked 3rd and 5th in logistic regression (both p < 0.01) but did not appear in the Random Forest top 10. Conversely, marital status, smoking status, TV hours, and physical activity ranked prominently in Random Forest (3rd through 6th) despite showing weaker or non-significant associations in logistic regression. (This divergence may reflect Random Forest's ability to capture nonlinear relationships or complex interactions that logistic regression does not model explicitly.)
+Figure 4 compares top-10 predictors ranked by |z-value| (logistic regression) and permutation-based importance (Random Forest). Strong concordance was observed: age dominated both rankings, followed by race (White vs. Black). Five variables overlapped in both top-10 lists: age, race, poverty, gender, and computer use; all statistically significant in logistic regression.
 
-Socioeconomic indicators showed moderate importance in both models: poverty level appeared in both top 10 lists, while education ranked 7th in Random Forest but outside the top 10 in logistic regression. Home ownership (rent) ranked 5th in logistic regression but did not appear in the Random Forest top 10.
+Notable divergence emerged in mid-tier rankings. Sleep trouble and home ownership ranked 3rd and 5th in logistic regression but not in Random Forest's top 10. Conversely, marital status, smoking, TV hours, and physical activity ranked 3rd–6th in Random Forest despite weak or non-significant logistic regression associations.
 
-The substantial overlap in top-ranked variables strengthens confidence in these factors as robust diabetes predictors across both parametric and non-parametric modeling approaches.
+Socioeconomic variables showed moderate importance: poverty appeared in both top-10 lists, while education ranked 7th in Random Forest but outside the logistic regression top 10. The substantial overlap strengthens confidence in these factors as robust diabetes predictors across parametric and non-parametric frameworks.
 
 # Discussion
-**[need revise]**
 
-This study examined socioeconomic, behavioral, and psychosocial determinants of diabetes among U.S. adults aged 40 years and older using complementary analytical approaches. Both logistic regression and Random Forest modeling consistently identified on age, race, poverty level, and sedentary behavior as influential diabetes predictors. Notable divergence between methods emerged for marital status, smoking, and physical activity, suggesting potential nonlinear relationships warranting further investigation.
+This study examined socioeconomic, behavioral, and psychosocial determinants of diabetes among U.S. adults aged 40 years and older using complementary analytical approaches. Both logistic regression and Random Forest models consistently identified age, race, poverty level, and sedentary behavior as influential diabetes predictors. Notable divergence between methods emerged for marital status, smoking, and physical activity, suggesting potential nonlinear relationships warranting further investigation.
 
-Demographic and socioeconomic factors dominated both models. Age showed the strongest association (OR = 1.04 per year, p < 0.001), consistent with established links between aging and insulin resistance. Substantial racial/ethnic disparities persisted: Black participants exhibited higher diabetes odds than White (OR = 0.45, p < 0.001), Asian (OR = 0.48, p = 0.013), and Hispanic (OR = 0.55, p = 0.028) participants, corroborating prior NHANES analyses (Menke et al., 2015) and underscoring systemic inequities. Low income (OR = 1.49, p = 0.034) and renting versus owning a home (OR = 1.41, p = 0.011) independently predicted higher diabetes odds, consistent with pathways linking economic hardship to diabetes through food insecurity, chronic stress, and limited healthcare access (Hill-Briggs et al., 2021). Education showed no significant association in logistic regression despite moderate Random Forest importance, suggesting complex, nonlinear protective mechanisms.
+Demographic and socioeconomic factors dominated both models. Age showed the strongest association (OR = 1.04 per year, p < 0.001), consistent with established links between aging and insulin resistance. Substantial racial disparities persisted: Black participants exhibited higher diabetes odds than White, Asian, and Hispanic participants, corroborating prior NHANES analyses (Menke et al., 2015). Low income (OR = 1.49, p = 0.034) and renting versus owning a home (OR = 1.41, p = 0.011) were associated with higher diabetes odds, established socioeconomic pathways (Hill-Briggs et al., 2021). Education showed no significant association in logistic regression despite moderate Random Forest importance, suggesting nonlinear or context-dependent effects.
 
-Behavioral factors emerged as modifiable risk factors. Both short sleep duration (<7 hours; OR = 1.26, p = 0.037) and sleep trouble (OR = 1.36, p = 0.009) independently predicted diabetes, corroborating meta-analytic evidence that insufficient or poor-quality sleep disrupts glucose metabolism (Cappuccio et al., 2010; Shan et al., 2015). Computer usage hours demonstrated a dose-response relationship (OR = 1.13 per hour, p = 0.010), while TV viewing showed borderline significance (OR = 1.07, p = 0.061). Interestingly, Random Forest assigned TV hours higher importance, possibly reflecting nonlinear thresholds or interactions not captured by the parametric model. Physical activity trended toward protection (OR = 0.80, p = 0.057) but did not reach significance, likely due to self-report limitations. Depression showed a significant positive association (OR = 1.43, p = 0.016), consistent with bidirectional links involving shared pathophysiology and behavioral pathways (Naicker et al., 2018).
+Behavioral factors emerged as modifiable risk factors. Both short sleep duration (\<7 hours; OR = 1.26, p = 0.037) and sleep trouble (OR = 1.36, p = 0.009) associated with diabetes, corroborating meta-analytic evidence that insufficient or poor-quality sleep disrupts glucose metabolism (Cappuccio et al., 2010; Shan et al., 2015). Computer usage hours demonstrated a dose-response relationship (OR = 1.13 per hour, p = 0.010), while TV viewing showed borderline significance (OR = 1.07, p = 0.061). Interestingly, Random Forest assigned TV hours higher importance, possibly reflecting nonlinear thresholds or interactions not captured by the parametric model. Physical activity trended toward protection (OR = 0.80, p = 0.057) but did not reach significance, likely due to self-report limitations. Depression showed a significant positive association (OR = 1.43, p = 0.016), consistent with bidirectional links involving shared pathophysiology and behavioral pathways (Naicker et al., 2018).
 
-Current smoking showed an inverse association (OR = 0.74, 95% CI: 0.55–0.99, p = 0.046), contradicting prospective evidence. This paradox likely reflects survival bias, older smokers with diabetes face elevated mortality, selectively removing them from the cross-sectional sample—and reverse causation, whereby individuals quit smoking after diagnosis. Current smokers with diabetes were younger than former smokers with diabetes (Supplementary Table 4), supporting mortality selection. Former smokers showed no protective association (OR = 1.07, p = 0.607). Our results should not be interpreted as evidence that smoking protects against diabetes. 
+Current smoking showed an inverse association (OR = 0.74, 95% CI: 0.55–0.99, p = 0.046), contradicting prospective evidence. This paradox likely reflects survival bias, older smokers with diabetes face elevated mortality, selectively removing them from the cross-sectional sample—and reverse causation, whereby individuals quit smoking after diagnosis. Current smokers with diabetes were younger than former smokers with diabetes (Supplementary Table 4), supporting mortality selection. Former smokers showed no protective association (OR = 1.07, p = 0.607). Our results should not be interpreted as evidence that smoking protects against diabetes.
 
 Alcohol consumption showed no significant associations. Heavy drinking exhibited a non-significant inverse association (OR = 0.90, 95% CI: 0.53–1.46, p = 0.679), inconsistent with meta-analytic evidence of a U-shaped relationship (Knott et al., 2015). This null finding likely reflects limited power (small sample), substantial underreporting, and potential survival bias (Supplementary Table 5).
 
@@ -398,65 +360,64 @@ Our findings support multifaceted diabetes prevention strategies targeting modif
 
 ## Conclusion
 
-Integrating logistic regression and random forest approaches, we identified age, race, poverty, sleep disturbances, and sedentary behavior as robust diabetes risk factors among U.S. adults aged 40 and older. Addressing modifiable risk factors—particularly sleep health and sedentary behavior—alongside upstream social determinants remains critical for diabetes prevention in this high-risk population.
-
+Integrating logistic regression and random forest approaches, we identified age, race, poverty, sleep disturbances, and sedentary behavior as robust diabetes risk factors among U.S. adults aged 40 and older. Addressing modifiable risk factors, particularly sleep health and sedentary behavior, alongside upstream social determinants remains critical for diabetes prevention in this high-risk population.
 
 # References
 
-- Centers for Disease Control and Prevention. (2024, May 15). National Diabetes Statistics Report. https://www.cdc.gov/diabetes/php/data-research/index.html 
+-   Centers for Disease Control and Prevention. (2024, May 15). National Diabetes Statistics Report. https://www.cdc.gov/diabetes/php/data-research/index.html
 
-- Cappuccio, F. P., D'Elia, L., Strazzullo, P., & Miller, M. A. (2010). Quantity and quality of sleep and incidence of type 2 diabetes: a systematic review and meta-analysis. Diabetes care, 33(2), 414-420.
+-   Cappuccio, F. P., D'Elia, L., Strazzullo, P., & Miller, M. A. (2010). Quantity and quality of sleep and incidence of type 2 diabetes: a systematic review and meta-analysis. Diabetes care, 33(2), 414-420.
 
-- Fox, J., & Weisberg, S. (2019). An R Companion to Applied Regression (3rd ed.). SAGE Publications. R package: https://CRAN.R-project.org/package=car
+-   Fox, J., & Weisberg, S. (2019). An R Companion to Applied Regression (3rd ed.). SAGE Publications. R package: https://CRAN.R-project.org/package=car
 
-- Grau, J., Grosse, I., & Keilwagen, J. (2015). PRROC: Computing and visualizing precision–recall and ROC curves in R. Bioinformatics, 31(15), 2595–2597. https://doi.org/10.1093/bioinformatics/btv153
+-   Grau, J., Grosse, I., & Keilwagen, J. (2015). PRROC: Computing and visualizing precision–recall and ROC curves in R. Bioinformatics, 31(15), 2595–2597. https://doi.org/10.1093/bioinformatics/btv153
 
-- Greenwell, B. M., & Boehmke, B. C. (2020). Variable importance plots—An introduction to the vip package. The R Journal, 12(1), 343–366. https://doi.org/10.32614/RJ-2020-013
+-   Greenwell, B. M., & Boehmke, B. C. (2020). Variable importance plots—An introduction to the vip package. The R Journal, 12(1), 343–366. https://doi.org/10.32614/RJ-2020-013
 
-- Hill-Briggs, F., Adler, N. E., Berkowitz, S. A., Chin, M. H., Gary-Webb, T. L., Navas-Acien, A., ... & Haire-Joshu, D. (2021). Social determinants of health and diabetes: A scientific review. Diabetes Care, 44(1), 258-279.
+-   Hill-Briggs, F., Adler, N. E., Berkowitz, S. A., Chin, M. H., Gary-Webb, T. L., Navas-Acien, A., ... & Haire-Joshu, D. (2021). Social determinants of health and diabetes: A scientific review. Diabetes Care, 44(1), 258-279.
 
-- Ismail, L., Materwala, H., & Al Kaabi, J. (2021). Association of risk factors with type 2 diabetes: A systematic review. Computational and structural biotechnology journal, 19, 1759-1785.
+-   Ismail, L., Materwala, H., & Al Kaabi, J. (2021). Association of risk factors with type 2 diabetes: A systematic review. Computational and structural biotechnology journal, 19, 1759-1785.
 
-- Kassambara, A. (2019). ggcorrplot: Visualization of a Correlation Matrix using “ggplot2”. R package version 0.1.3. https://CRAN.R-project.org/package=ggcorrplot
+-   Kassambara, A. (2019). ggcorrplot: Visualization of a Correlation Matrix using “ggplot2”. R package version 0.1.3. https://CRAN.R-project.org/package=ggcorrplot
 
-- Knott, C., Bell, S., & Britton, A. (2015). Alcohol consumption and the risk of type 2 diabetes: A systematic review and dose-response meta-analysis of more than 1.9 million individuals from 38 observational studies. Diabetes Care, 38(9), 1804-1812.
+-   Knott, C., Bell, S., & Britton, A. (2015). Alcohol consumption and the risk of type 2 diabetes: A systematic review and dose-response meta-analysis of more than 1.9 million individuals from 38 observational studies. Diabetes Care, 38(9), 1804-1812.
 
-- Kowarik, A., & Templ, M. (2016). Imputation with the R package VIM. Journal of Statistical Software, 74(7), 1–16. https://doi.org/10.18637/jss.v074.i07
+-   Kowarik, A., & Templ, M. (2016). Imputation with the R package VIM. Journal of Statistical Software, 74(7), 1–16. https://doi.org/10.18637/jss.v074.i07
 
-- Kuhn, M. (2008). Building predictive models in R using the caret package. Journal of Statistical Software, 28(5), 1–26. https://doi.org/10.18637/jss.v028.i05
+-   Kuhn, M. (2008). Building predictive models in R using the caret package. Journal of Statistical Software, 28(5), 1–26. https://doi.org/10.18637/jss.v028.i05
 
-- Liaw, A., & Wiener, M. (2002). Classification and regression by randomForest. R News, 2(3), 18–22. https://CRAN.R-project.org/package=randomForest
+-   Liaw, A., & Wiener, M. (2002). Classification and regression by randomForest. R News, 2(3), 18–22. https://CRAN.R-project.org/package=randomForest
 
-- Liu, C., He, L., Li, Y., Yang, A., Zhang, K., & Luo, B. (2023). Diabetes risk among US adults with different socioeconomic status and behavioral lifestyles: evidence from the National Health and Nutrition Examination Survey. Frontiers in Public Health, 11, 1197947.
+-   Liu, C., He, L., Li, Y., Yang, A., Zhang, K., & Luo, B. (2023). Diabetes risk among US adults with different socioeconomic status and behavioral lifestyles: evidence from the National Health and Nutrition Examination Survey. Frontiers in Public Health, 11, 1197947.
 
-- Menke, A., Casagrande, S., Geiss, L., & Cowie, C. C. (2015). Prevalence of and trends in diabetes among adults in the United States, 1988-2012. JAMA, 314(10), 1021-1029.
+-   Menke, A., Casagrande, S., Geiss, L., & Cowie, C. C. (2015). Prevalence of and trends in diabetes among adults in the United States, 1988-2012. JAMA, 314(10), 1021-1029.
 
-- Müller, K. (2020). here: A Simpler Way to Find Your Files. R package version 1.0.1. https://CRAN.R-project.org/package=here
+-   Müller, K. (2020). here: A Simpler Way to Find Your Files. R package version 1.0.1. https://CRAN.R-project.org/package=here
 
-- Naicker, K., Manuel, D., Øverland, S., Skogen, J. C., Johnson, J. A., Sivertsen, B., & Colman, I. (2018). Population attributable fractions for Type 2 diabetes: an examination of multiple risk factors including symptoms of depression and anxiety. Diabetology & Metabolic Syndrome, 10(1), 84.
+-   Naicker, K., Manuel, D., Øverland, S., Skogen, J. C., Johnson, J. A., Sivertsen, B., & Colman, I. (2018). Population attributable fractions for Type 2 diabetes: an examination of multiple risk factors including symptoms of depression and anxiety. Diabetology & Metabolic Syndrome, 10(1), 84.
 
-- Neuwirth, E. (2022). RColorBrewer: ColorBrewer Palettes. https://CRAN.R-project.org/package=RColorBrewer
+-   Neuwirth, E. (2022). RColorBrewer: ColorBrewer Palettes. https://CRAN.R-project.org/package=RColorBrewer
 
-- Pedersen, T. L. (2024). patchwork: The Composer of Plots. R package version 1.2.0. https://CRAN.R-project.org/package=patchwork
+-   Pedersen, T. L. (2024). patchwork: The Composer of Plots. R package version 1.2.0. https://CRAN.R-project.org/package=patchwork
 
-- R Core Team. (2024). R: A language and environment for statistical computing (Version 4.5.1) [Computer software]. R Foundation for Statistical Computing. https://www.R-project.org/
+-   R Core Team. (2024). R: A language and environment for statistical computing (Version 4.5.1) \[Computer software\]. R Foundation for Statistical Computing. https://www.R-project.org/
 
-- Robin, X., Turck, N., Hainard, A., Tiberti, N., Lisacek, F., Sanchez, J.-C., & Müller, M. (2011). pROC: An open-source package for R and S+ to analyze and compare ROC curves. BMC Bioinformatics, 12, 77. https://doi.org/10.1186/1471-2105-12-77
+-   Robin, X., Turck, N., Hainard, A., Tiberti, N., Lisacek, F., Sanchez, J.-C., & Müller, M. (2011). pROC: An open-source package for R and S+ to analyze and compare ROC curves. BMC Bioinformatics, 12, 77. https://doi.org/10.1186/1471-2105-12-77
 
-- Robinson, D., Hayes, A., & Couch, S. (2024). broom: Convert Statistical Analysis Objects into Tidy Tibbles. R package version 1.0.6. https://CRAN.R-project.org/package=broom
+-   Robinson, D., Hayes, A., & Couch, S. (2024). broom: Convert Statistical Analysis Objects into Tidy Tibbles. R package version 1.0.6. https://CRAN.R-project.org/package=broom
 
-- Signorell, A., et al. (2024). DescTools: Tools for Descriptive Statistics. R package version 0.99.56. https://cran.r-project.org/package=DescTools
+-   Signorell, A., et al. (2024). DescTools: Tools for Descriptive Statistics. R package version 0.99.56. https://cran.r-project.org/package=DescTools
 
-- Suwannaphant, K., Laohasiriwong, W., Puttanapong, N., Saengsuwan, J., & Phajan, T. (2017). Association between Socioeconomic Status and Diabetes Mellitus: The National Socioeconomics Survey, 2010 and 2012. Journal of clinical and diagnostic research : JCDR, 11(7), LC18–LC22. https://doi.org/10.7860/JCDR/2017/28221.10286
+-   Suwannaphant, K., Laohasiriwong, W., Puttanapong, N., Saengsuwan, J., & Phajan, T. (2017). Association between Socioeconomic Status and Diabetes Mellitus: The National Socioeconomics Survey, 2010 and 2012. Journal of clinical and diagnostic research : JCDR, 11(7), LC18–LC22. https://doi.org/10.7860/JCDR/2017/28221.10286
 
-- Shan, Z., Ma, H., Xie, M., Yan, P., Guo, Y., Bao, W., ... & Liu, L. (2015). Sleep duration and risk of type 2 diabetes: a meta-analysis of prospective studies. Diabetes care, 38(3), 529-537.
+-   Shan, Z., Ma, H., Xie, M., Yan, P., Guo, Y., Bao, W., ... & Liu, L. (2015). Sleep duration and risk of type 2 diabetes: a meta-analysis of prospective studies. Diabetes care, 38(3), 529-537.
 
-- Welch, B. L., & McBride, G. B. (2014). NHANES: Data from the US National Health and Nutrition Examination Study. R package version 2.1.0. https://CRAN.R-project.org/package=NHANES
+-   Welch, B. L., & McBride, G. B. (2014). NHANES: Data from the US National Health and Nutrition Examination Study. R package version 2.1.0. https://CRAN.R-project.org/package=NHANES
 
-- Wickham, H. (2007). Reshaping Data with the reshape Package. Journal of Statistical Software, 21(12), 1–20. https://doi.org/10.18637/jss.v021.i12
+-   Wickham, H. (2007). Reshaping Data with the reshape Package. Journal of Statistical Software, 21(12), 1–20. https://doi.org/10.18637/jss.v021.i12
 
-- Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D., François, R., Grolemund, G., et al. (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686.
+-   Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D., François, R., Grolemund, G., et al. (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686.
 
-- Xie, Y. (2015). Dynamic Documents with R and knitr (2nd ed.). Chapman and Hall/CRC. https://yihui.org/knitr/
+-   Xie, Y. (2015). Dynamic Documents with R and knitr (2nd ed.). Chapman and Hall/CRC. https://yihui.org/knitr/
 
-- Zhu, H. (2024). kableExtra: Construct Complex Table with “kable” and Pipe Syntax. R package version 1.3.7. https://CRAN.R-project.org/package=kableExtra
+-   Zhu, H. (2024). kableExtra: Construct Complex Table with “kable” and Pipe Syntax. R package version 1.3.7. https://CRAN.R-project.org/package=kableExtra

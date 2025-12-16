@@ -139,7 +139,35 @@ kable(
 )
 ```
 
-```{r figure s1, fig.cap="Correlation among Numeric Variables (Left) and Association among Categorical Variables (Right)", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
+```{r figure1, fig.cap="Distribution of Numeric and Categorical Variables)", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
+# Histogram plots: numerical variables
+ourdata_num_vars <- dat_imputed |>
+  select(Age, Poverty, SleepHrsNight, AlcoholDay, AlcoholYear)
+
+hist_plots <- map(names(ourdata_num_vars), function(v) {
+  ggplot(ourdata_num_vars, aes_string(x = v)) +
+    geom_histogram(bins = 30, fill = "#377EB8", color = "white", na.rm = TRUE) +
+    theme_minimal(base_size = 10)})
+
+# Barplots: categorical variables
+ourdata_cat_vars <- dat_imputed |>
+  select(Gender, Race3, Education, MaritalStatus, Work, HomeOwn, SleepTrouble, PhysActive, 
+         TVHrsDay, CompHrsDay, Alcohol12PlusYr, SmokeNow, Smoke100, LittleInterest, Depressed)
+
+bar_plots <- map(names(ourdata_cat_vars), function(v) {
+  ggplot(ourdata_cat_vars, aes_string(x = v)) +
+    geom_bar(fill = "steelblue", color = "white", na.rm = TRUE) +
+    theme_minimal(base_size = 10) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+})
+
+all_plots <- c(hist_plots, bar_plots)
+combined_plot_all <- wrap_plots(all_plots, ncol = 5) 
+combined_plot_all
+```
+
+
+```{r figure 2, fig.cap="Correlation among Numeric Variables (Left) and Association among Categorical Variables (Right)", fig.width=10, fig.height=5, echo=FALSE, warning=FALSE}
 # Correlation
 # All numerical variables
 num_vars <- clean_data |>
@@ -204,9 +232,13 @@ kable(
 )
 ```
 
-```{r figure s2, fig.cap="Diagnostic Plots", echo=FALSE}
+```{r figure 3, fig.cap="Diagnostic Plots", echo=FALSE}
 par(mfrow = c(2, 2))
 plot(mod)
+```
+
+```{r figure 4, fig.cap="Receiver operating characteristic (ROC) curve for the balanced Random Forest classifier evaluated on the held-out test set.", echo=FALSE, warning=FALSE}
+plot(roc_obj, col = "steelblue",legacy.axes = TRUE, print.auc = TRUE, print.auc.cex = 1.2, print.auc.col = "steelblue")
 ```
 
 ```{r table 4, echo=FALSE}
@@ -236,20 +268,3 @@ kable(alcohol_table,
       caption = "Characteristics by Alcohol Category",
       align = c("l", "r", "r"))
 ```
-
-
-```{r figure s3, fig.cap="Receiver operating characteristic (ROC) curve for the balanced Random Forest classifier evaluated on the held-out test set.", echo=FALSE, warning=FALSE}
-plot(roc_obj, col = "steelblue",legacy.axes = TRUE, print.auc = TRUE, print.auc.cex = 1.2, print.auc.col = "steelblue")
-```
-
-
-```{r figure s4, fig.cap="Precision–Recall curve for the Random Forest classifier evaluated on the test set.", echo=FALSE, warning=FALSE}
-plot(pr, main = sprintf("Precision–Recall Curve", pr$auc.integral))
-```
-
-
-```{r figure s5, fig.cap="Permutation-based variable importance for the Random Forest classifier, ranked by decrease in ROC–AUC.", echo=FALSE, warning=FALSE}
-vip(vi, num_features = 15, geom = "col")
-```
-
-
