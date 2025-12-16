@@ -1,0 +1,9 @@
+Individual Contribution – Qianyu Fan
+
+I was primarily responsible for data preprocessing, incl.data cleaning, EDA, and variable selection. 
+
+I drafted the Abstract and Introduction, and wrote the data-related sections of the Methods, including data source, preprocessing, variable selection, and EDA. I also integrated contributions from other team members into the final report to ensure coherence and consistency across sections.
+
+I wrote the project README, documenting the repository structure, data workflow, and instructions for reproducing the analysis.
+
+I spent approximately 4–6 hours per week on this project.
